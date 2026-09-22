@@ -1,1736 +1,1582 @@
 <!DOCTYPE html>
 <html lang="pt-BR" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamHub Pro - Gestão & Cronograma de Lives</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            twitch: '#9146FF',
-                            youtube: '#FF0000',
-                            kick: '#53FC18',
-                            tiktok: '#FE2C55',
-                            bilibili: '#00AEEC',
-                        }
-                    }
-                }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StreamHub Pro - Gestão & Grade Semanal de Lives</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            heading: ['"Outfit"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              twitch: '#9146FF',
+              youtube: '#FF0000',
+              kick: '#53FC18',
+              tiktok: '#FE2C55',
+              bilibili: '#00AEEC',
             }
+          }
         }
-    </script>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --app-bg: #090d16;
-            --app-card: #121927;
-            --app-text: #e2e8f0;
-            --app-highlight: #38bdf8;
-            --app-accent: #6366f1;
-            --app-border: rgba(255, 255, 255, 0.08);
-        }
+      }
+    }
+  </script>
 
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--app-bg);
-            color: var(--app-text);
-            transition: background-color 0.25s ease, color 0.25s ease;
-        }
+  <style>
+    :root {
+      --bg-color: #080a11;
+      --card-bg: #121625;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text-color: #f1f5f9;
+      --accent-color: #a855f7;
+      --highlight-color: #38bdf8;
+    }
 
-        .heading-font {
-            font-family: 'Outfit', sans-serif;
-        }
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      background-image: 
+        radial-gradient(circle at 10% 15%, rgba(168, 85, 247, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 90% 85%, rgba(59, 130, 246, 0.12) 0%, transparent 45%);
+      background-attachment: fixed;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
 
-        .custom-card {
-            background-color: var(--app-card);
-            border: 1px solid var(--app-border);
-        }
+    .glass-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
 
-        .custom-highlight {
-            color: var(--app-highlight);
-        }
+    .heading-font {
+      font-family: 'Outfit', sans-serif;
+    }
 
-        .custom-accent-bg {
-            background-color: var(--app-accent);
-        }
+    /* Scrollbar personalizada */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.3);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.28);
+    }
 
-        .glass-panel {
-            background: rgba(18, 25, 39, 0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--app-border);
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 7px;
-            height: 7px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.25);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.16);
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        /* Print styles */
-        @media print {
-            body {
-                background: #ffffff !important;
-                color: #000000 !important;
-            }
-            .no-print, #authScreen, header {
-                display: none !important;
-            }
-            .custom-card {
-                background: #ffffff !important;
-                color: #111111 !important;
-                border: 1px solid #d1d5db !important;
-                box-shadow: none !important;
-                break-inside: avoid;
-            }
-            .custom-highlight, .custom-accent-bg {
-                color: #111827 !important;
-            }
-        }
-    </style>
+    /* Ajustes para impressão */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        background-image: none !important;
+      }
+      .no-print, #authOverlay, header, #toastNotification {
+        display: none !important;
+      }
+      .glass-card {
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: none !important;
+        color: #0f172a !important;
+        break-inside: avoid;
+      }
+      .text-white, .text-slate-300, .text-slate-400 {
+        color: #0f172a !important;
+      }
+    }
+  </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+<body class="min-h-screen flex flex-col antialiased selection:bg-purple-600 selection:text-white pb-10">
 
-    <!-- ==================== TELA DE AUTENTICAÇÃO / LOGIN ==================== -->
-    <div id="authScreen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#080a11] overflow-y-auto">
-        <!-- Decorative Glow Lights -->
-        <div class="fixed top-1/4 left-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="fixed bottom-1/4 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
-
-        <div class="glass-panel w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-2xl relative border border-white/10 my-8">
-            <!-- Brand Avatar -->
-            <div class="flex flex-col items-center text-center mb-6">
-                <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-pink-500 flex items-center justify-center text-white text-2xl font-black shadow-xl shadow-purple-600/30 mb-3">
-                    <i class="fa-solid fa-tower-broadcast animate-pulse"></i>
-                </div>
-                <h1 class="text-2xl font-extrabold text-white tracking-tight heading-font" id="authTitle">StreamHub Pro</h1>
-                <p class="text-xs text-slate-400 mt-1" id="authSubtitle">Entre com seu usuário e senha para acessar sua grade</p>
-            </div>
-
-            <!-- Tabs: Entrar vs Criar Acesso -->
-            <div id="authTabsContainer" class="flex bg-black/40 p-1 rounded-xl mb-5 border border-white/5">
-                <button type="button" id="tabBtnLogin" onclick="setAuthMode('login')" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all bg-indigo-600 text-white shadow">
-                    Entrar
-                </button>
-                <button type="button" id="tabBtnRegister" onclick="setAuthMode('register')" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all text-slate-400 hover:text-white">
-                    Criar Acesso
-                </button>
-            </div>
-
-            <!-- Dynamic Alert Message -->
-            <div id="authAlert" class="hidden mb-4 p-3 rounded-xl text-xs font-semibold flex items-center gap-2 border"></div>
-
-            <!-- Form -->
-            <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
-                <!-- User -->
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Usuário</label>
-                    <div class="relative">
-                        <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
-                        <input type="text" id="authUsername" required placeholder="Digite seu usuário" class="w-full pl-9 pr-3 py-2.5 bg-black/40 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
-                    </div>
-                </div>
-
-                <!-- Password -->
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Senha</label>
-                    <div class="relative">
-                        <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
-                        <input type="password" id="authPassword" required placeholder="Digite sua senha" class="w-full pl-9 pr-10 py-2.5 bg-black/40 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
-                        <button type="button" onclick="togglePasswordVisibility('authPassword', 'eyeAuthPass')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white">
-                            <i id="eyeAuthPass" class="fa-solid fa-eye text-xs"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Confirm Password (shown only on register / first access) -->
-                <div id="confirmPasswordBlock" class="hidden">
-                    <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Confirmar Senha</label>
-                    <div class="relative">
-                        <i class="fa-solid fa-shield-check absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
-                        <input type="password" id="authPasswordConfirm" placeholder="Repita a senha digitada" class="w-full pl-9 pr-10 py-2.5 bg-black/40 border border-white/10 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
-                        <button type="button" onclick="togglePasswordVisibility('authPasswordConfirm', 'eyeAuthConfirm')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white">
-                            <i id="eyeAuthConfirm" class="fa-solid fa-eye text-xs"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Remember me checkbox (login mode only) -->
-                <div id="rememberBlock" class="flex items-center justify-between text-xs pt-1">
-                    <label class="flex items-center gap-2 cursor-pointer select-none text-slate-400 hover:text-slate-300">
-                        <input type="checkbox" id="authRememberMe" class="w-4 h-4 rounded bg-black/50 border-white/20 text-indigo-600 focus:ring-0">
-                        <span>Lembrar login</span>
-                    </label>
-                </div>
-
-                <!-- Submit button -->
-                <button type="submit" id="authSubmitBtn" class="w-full py-3 px-4 custom-accent-bg text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-indigo-600/30 hover:opacity-90 active:scale-95 transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-right-to-bracket"></i>
-                    <span>Entrar no Painel</span>
-                </button>
-            </form>
-
-            <div class="mt-6 pt-4 border-t border-white/5 text-center">
-                <p class="text-[11px] text-slate-500 flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-shield-halved text-emerald-400"></i> Proteção local com criptografia SHA-256
-                </p>
-            </div>
+  <!-- ================= TELA DE AUTENTICAÇÃO / PRIMEIRO ACESSO ================= -->
+  <div id="authOverlay" class="fixed inset-0 z-50 bg-[#080a11]/95 backdrop-blur-2xl flex items-center justify-center p-4">
+    <div class="w-full max-w-md glass-card rounded-3xl p-7 sm:p-8 shadow-2xl relative border border-purple-500/20">
+      
+      <div class="text-center mb-6">
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-pink-500 flex items-center justify-center text-white text-2xl font-black shadow-xl shadow-purple-600/30 mb-3.5">
+          <i class="fa-solid fa-tower-broadcast animate-pulse"></i>
         </div>
-    </div>
+        <h2 id="authScreenTitle" class="text-2xl font-black text-white heading-font tracking-tight">StreamHub Pro</h2>
+        <p id="authScreenSubtitle" class="text-xs text-slate-400 mt-1">Gerenciador de Grade & Simulcast</p>
+      </div>
 
-    <!-- ==================== PAINEL PRINCIPAL (DASHBOARD) ==================== -->
-    <div id="appContainer" class="hidden flex-1 flex flex-col">
-        <!-- Top Navigation Bar -->
-        <header class="sticky top-0 z-30 glass-panel border-b border-white/10 px-4 lg:px-8 py-3.5 no-print transition-colors">
-            <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
-                <!-- Brand Identity -->
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center shadow-lg shadow-indigo-500/25 text-white text-lg">
-                        <i class="fa-solid fa-satellite-dish"></i>
-                    </div>
-                    <div>
-                        <h1 class="heading-font text-xl font-black tracking-tight flex items-center gap-2">
-                            STREAM <span class="custom-highlight">HUB</span>
-                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 tracking-widest text-emerald-300 font-bold uppercase border border-emerald-400/30">Online</span>
-                        </h1>
-                        <p class="text-xs opacity-65">
-                            Conectado como: <strong id="loggedUserDisplay" class="text-indigo-400 font-semibold">Admin</strong>
-                        </p>
-                    </div>
-                </div>
+      <!-- Abas (Ocultas se for primeiro acesso) -->
+      <div id="authTabsContainer" class="flex bg-slate-900/90 p-1 rounded-xl mb-5 border border-white/5">
+        <button id="tabLoginBtn" type="button" onclick="setAuthViewMode('login')" class="flex-1 py-2 text-xs font-bold rounded-lg transition bg-purple-600 text-white shadow">Entrar</button>
+        <button id="tabRegisterBtn" type="button" onclick="setAuthViewMode('register')" class="flex-1 py-2 text-xs font-bold rounded-lg transition text-slate-400 hover:text-white">Criar Acesso</button>
+      </div>
 
-                <!-- Action Controls -->
-                <div class="flex items-center flex-wrap gap-2">
-                    <!-- Security / Change Pass -->
-                    <button id="btnOpenAccountModal" class="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold flex items-center gap-1.5 transition">
-                        <i class="fa-solid fa-key text-amber-400"></i>
-                        <span class="hidden sm:inline">Credenciais</span>
-                    </button>
+      <div id="authAlertBanner" class="hidden mb-4 p-3 rounded-xl text-xs font-semibold flex items-center gap-2 border"></div>
 
-                    <!-- Theme Colors -->
-                    <button id="btnOpenColors" class="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold flex items-center gap-1.5 transition">
-                        <i class="fa-solid fa-palette text-purple-400"></i>
-                        <span class="hidden sm:inline">Cores</span>
-                    </button>
-
-                    <!-- Backup / JSON -->
-                    <button id="btnOpenData" class="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold flex items-center gap-1.5 transition">
-                        <i class="fa-solid fa-file-arrow-up text-sky-400"></i>
-                        <span class="hidden sm:inline">Backup</span>
-                    </button>
-
-                    <!-- Print View -->
-                    <button onclick="window.print()" class="px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold flex items-center gap-1.5 transition">
-                        <i class="fa-solid fa-print text-emerald-400"></i>
-                        <span class="hidden sm:inline">Imprimir</span>
-                    </button>
-
-                    <!-- New Live Modal Trigger -->
-                    <button id="btnOpenCreateModal" class="px-4 py-2 rounded-xl custom-accent-bg text-white font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-indigo-600/30 hover:opacity-90 active:scale-95 transition">
-                        <i class="fa-solid fa-plus"></i>
-                        <span>Nova Live</span>
-                    </button>
-
-                    <!-- Logout Button -->
-                    <button onclick="logoutAction()" class="px-3 py-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 text-xs font-semibold flex items-center gap-1.5 transition" title="Sair da Conta">
-                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                        <span class="hidden sm:inline">Sair</span>
-                    </button>
-                </div>
-            </div>
-        </header>
-
-        <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
-            
-            <!-- Filter, Search and Grouping Ribbon -->
-            <section class="glass-panel p-4 rounded-2xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 no-print shadow-xl">
-                <!-- Search Input -->
-                <div class="relative flex-1">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-sm opacity-50"></i>
-                    <input type="text" id="searchInput" placeholder="Pesquisar por título, comunidade ou anotações..." class="w-full pl-10 pr-4 py-2 text-sm rounded-xl bg-black/30 border border-white/10 focus:outline-none focus:border-indigo-500 transition placeholder:text-gray-500">
-                </div>
-
-                <!-- Grouping By: Day, Community, Platform -->
-                <div class="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
-                    <span class="text-xs uppercase font-bold tracking-wider opacity-60 whitespace-nowrap"><i class="fa-solid fa-layer-group mr-1"></i>Agrupar:</span>
-                    <div class="inline-flex rounded-xl bg-black/40 p-1 border border-white/10 text-xs font-semibold">
-                        <button class="group-btn px-3 py-1.5 rounded-lg active transition bg-indigo-600 text-white" data-group="day">
-                            <i class="fa-regular fa-calendar-days mr-1"></i>Dias
-                        </button>
-                        <button class="group-btn px-3 py-1.5 rounded-lg opacity-70 hover:opacity-100 transition" data-group="community">
-                            <i class="fa-solid fa-users mr-1"></i>Comunidades
-                        </button>
-                        <button class="group-btn px-3 py-1.5 rounded-lg opacity-70 hover:opacity-100 transition" data-group="platform">
-                            <i class="fa-solid fa-video mr-1"></i>Plataformas
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Platform Filters: Twitch, YouTube, Kick, TikTok, Bilibili -->
-                <div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
-                    <button class="filter-platform px-3 py-1.5 rounded-xl text-xs font-semibold border border-indigo-500 bg-indigo-500/20 active-platform transition whitespace-nowrap" data-plat="all">
-                        Todos
-                    </button>
-                    <button class="filter-platform px-2.5 py-1.5 rounded-xl text-xs font-semibold border border-white/10 bg-white/5 hover:bg-white/10 transition flex items-center gap-1.5 whitespace-nowrap" data-plat="Twitch">
-                        <i class="fa-brands fa-twitch text-[#9146FF]"></i> Twitch
-                    </button>
-                    <button class="filter-platform px-2.5 py-1.5 rounded-xl text-xs font-semibold border border-white/10 bg-white/5 hover:bg-white/10 transition flex items-center gap-1.5 whitespace-nowrap" data-plat="YouTube">
-                        <i class="fa-brands fa-youtube text-[#FF0000]"></i> YouTube
-                    </button>
-                    <button class="filter-platform px-2.5 py-1.5 rounded-xl text-xs font-semibold border border-white/10 bg-white/5 hover:bg-white/10 transition flex items-center gap-1.5 whitespace-nowrap" data-plat="Kick">
-                        <i class="fa-solid fa-bolt text-[#53FC18]"></i> Kick
-                    </button>
-                    <button class="filter-platform px-2.5 py-1.5 rounded-xl text-xs font-semibold border border-white/10 bg-white/5 hover:bg-white/10 transition flex items-center gap-1.5 whitespace-nowrap" data-plat="TikTok">
-                        <i class="fa-brands fa-tiktok text-[#FE2C55]"></i> TikTok
-                    </button>
-                    <button class="filter-platform px-2.5 py-1.5 rounded-xl text-xs font-semibold border border-white/10 bg-white/5 hover:bg-white/10 transition flex items-center gap-1.5 whitespace-nowrap" data-plat="Bilibili">
-                        <i class="fa-brands fa-bilibili text-[#00AEEC]"></i> Bilibili
-                    </button>
-                </div>
-            </section>
-
-            <!-- Dedicated Individual KPI Platform Metrics -->
-            <section class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3 no-print">
-                <!-- 1. Total Lives -->
-                <div class="custom-card p-3 rounded-2xl border border-white/10 flex items-center justify-between hover:border-indigo-500/40 transition">
-                    <div>
-                        <p class="text-[10px] uppercase font-black opacity-60 tracking-wider">Total Lives</p>
-                        <h3 id="statTotalLives" class="text-xl font-black heading-font mt-0.5 custom-highlight">0</h3>
-                    </div>
-                    <div class="w-8 h-8 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-400">
-                        <i class="fa-solid fa-calendar-check text-sm"></i>
-                    </div>
-                </div>
-
-                <!-- 2. Comunidades -->
-                <div class="custom-card p-3 rounded-2xl border border-white/10 flex items-center justify-between hover:border-pink-500/40 transition">
-                    <div>
-                        <p class="text-[10px] uppercase font-black opacity-60 tracking-wider">Comunidades</p>
-                        <h3 id="statTotalCommunities" class="text-xl font-black heading-font mt-0.5 text-pink-400">0</h3>
-                    </div>
-                    <div class="w-8 h-8 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-400">
-                        <i class="fa-solid fa-shield-heart text-sm"></i>
-                    </div>
-                </div>
-
-                <!-- 3. Twitch Individual -->
-                <div class="custom-card p-3 rounded-2xl border border-white/10 flex items-center justify-between hover:border-[#9146FF]/40 transition">
-                    <div>
-                        <p class="text-[10px] uppercase font-black opacity-60 tracking-wider">Twitch</p>
-                        <h3 id="statTwitch" class="text-xl font-black heading-font mt-0.5 text-[#9146FF]">0</h3>
-                    </div>
-                    <div class="w-8 h-8 rounded-xl bg-[#9146FF]/15 flex items-center justify-center text-[#9146FF]">
-                        <i class="fa-brands fa-twitch text-sm"></i>
-                    </div>
-                </div>
-
-                <!-- 4. YouTube Individual -->
-                <div class="custom-card p-3 rounded-2xl border border-white/10 flex items-center justify-between hover:border-[#FF0000]/40 transition">
-                    <div>
-                        <p class="text-[10px] uppercase font-black opacity-60 tracking-wider">YouTube</p>
-                        <h3 id="statYouTube" class="text-xl font-black heading-font mt-0.5 text-[#FF0000]">0</h3>
-                    </div>
-                    <div class="w-8 h-8 rounded-xl bg-[#FF0000]/15 flex items-center justify-center text-[#FF0000]">
-                        <i class="fa-brands fa-youtube text-sm"></i>
-                    </div>
-                </div>
-
-                <!-- 5. Kick Individual -->
-                <div class="custom-card p-3 rounded-2xl border border-white/10 flex items-center justify-between hover:border-[#53FC18]/40 transition">
-                    <div>
-                        <p class="text-[10px] uppercase font-black opacity-60 tracking-wider">Kick</p>
-                        <h3 id="statKick" class="text-xl font-black heading-font mt-0.5 text-[#53FC18]">0</h3>
-                    </div>
-                    <div class="w-8 h-8 rounded-xl bg-[#53FC18]/15 flex items-center justify-center text-[#53FC18]">
-                        <i class="fa-solid fa-bolt text-sm"></i>
-                    </div>
-                </div>
-
-                <!-- 6. TikTok Individual -->
-                <div class="custom-card p-3 rounded-2xl border border-white/10 flex items-center justify-between hover:border-[#FE2C55]/40 transition">
-                    <div>
-                        <p class="text-[10px] uppercase font-black opacity-60 tracking-wider">TikTok</p>
-                        <h3 id="statTikTok" class="text-xl font-black heading-font mt-0.5 text-[#FE2C55]">0</h3>
-                    </div>
-                    <div class="w-8 h-8 rounded-xl bg-[#FE2C55]/15 flex items-center justify-center text-[#FE2C55]">
-                        <i class="fa-brands fa-tiktok text-sm"></i>
-                    </div>
-                </div>
-
-                <!-- 7. Bilibili Individual -->
-                <div class="custom-card p-3 rounded-2xl border border-white/10 flex items-center justify-between hover:border-[#00AEEC]/40 transition">
-                    <div>
-                        <p class="text-[10px] uppercase font-black opacity-60 tracking-wider">Bilibili</p>
-                        <h3 id="statBilibili" class="text-xl font-black heading-font mt-0.5 text-[#00AEEC]">0</h3>
-                    </div>
-                    <div class="w-8 h-8 rounded-xl bg-[#00AEEC]/15 flex items-center justify-center text-[#00AEEC]">
-                        <i class="fa-brands fa-bilibili text-sm"></i>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Dynamic Schedule Container -->
-            <section id="scheduleContainer" class="space-y-8">
-                <!-- Injected via JavaScript -->
-            </section>
-
-            <!-- Empty State -->
-            <div id="emptyState" class="hidden text-center py-16 px-4">
-                <div class="w-20 h-20 mx-auto rounded-3xl bg-white/5 flex items-center justify-center text-3xl opacity-40 mb-4 border border-white/10">
-                    <i class="fa-solid fa-calendar-xmark"></i>
-                </div>
-                <h3 class="text-lg font-bold">Nenhuma transmissão encontrada</h3>
-                <p class="text-sm opacity-60 max-w-sm mx-auto mt-1">Crie uma nova transmissão ou ajuste seus filtros de plataforma e pesquisa.</p>
-                <button id="btnEmptyCreate" class="mt-4 px-5 py-2.5 rounded-xl custom-accent-bg text-white text-xs font-bold uppercase tracking-wider shadow-lg shadow-indigo-500/25">
-                    Criar Primeira Live
-                </button>
-            </div>
-
-        </main>
-    </div>
-
-    <!-- ==================== MODAL: ADICIONAR / EDITAR LIVE ==================== -->
-    <div id="liveModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden overflow-y-auto">
-        <div class="custom-card w-full max-w-xl rounded-2xl p-6 shadow-2xl border border-white/15 my-8">
-            <div class="flex items-center justify-between pb-4 border-b border-white/10">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-lg bg-indigo-600/30 flex items-center justify-center text-indigo-400">
-                        <i class="fa-solid fa-headset"></i>
-                    </div>
-                    <h2 id="modalTitle" class="text-lg font-bold heading-font">Agendar Transmissão</h2>
-                </div>
-                <button id="btnCloseLiveModal" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-sm opacity-70 hover:opacity-100">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <form id="liveForm" class="space-y-4 pt-4 text-sm">
-                <input type="hidden" id="liveId">
-
-                <!-- Title -->
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider opacity-80 mb-1" for="liveTitle">Título da Transmissão / Conteúdo *</label>
-                    <input type="text" id="liveTitle" required placeholder="Ex: Farm de Equipamentos, Guerra de Facções, Resenha Noturna" class="w-full px-3.5 py-2 rounded-xl bg-black/30 border border-white/10 focus:outline-none focus:border-indigo-500 transition">
-                </div>
-
-                <!-- Multi-Platform & Multi-Community -->
-                <div class="space-y-4">
-                    <!-- Platforms -->
-                    <div>
-                        <div class="flex items-center justify-between mb-1.5">
-                            <label class="block text-xs font-bold uppercase tracking-wider opacity-80">Plataformas de Transmissão *</label>
-                            <span class="text-[11px] opacity-60">Escolha uma ou mais (Multistream)</span>
-                        </div>
-                        <div id="platformSelectorList" class="flex flex-wrap gap-2.5 p-2.5 rounded-xl bg-black/30 border border-white/10 min-h-[48px] items-center">
-                            <!-- Injected by JS -->
-                        </div>
-                        <p id="platformError" class="text-rose-400 text-xs mt-1 hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i>Selecione pelo menos uma plataforma.</p>
-                    </div>
-
-                    <!-- Communities -->
-                    <div>
-                        <div class="flex items-center justify-between mb-1.5">
-                            <label class="block text-xs font-bold uppercase tracking-wider opacity-80">Comunidades Participantes *</label>
-                            <span class="text-[11px] opacity-60">Selecione uma ou mais</span>
-                        </div>
-                        <div id="communitySelectorList" class="flex flex-wrap gap-2 p-2.5 rounded-xl bg-black/30 border border-white/10 min-h-[48px] items-center">
-                            <!-- Injected by JS -->
-                        </div>
-                        <!-- Add Custom Community -->
-                        <div class="mt-2 flex gap-2">
-                            <input type="text" id="customCommunityInput" placeholder="Adicionar outra comunidade personalizada..." class="flex-1 px-3 py-1.5 rounded-xl bg-black/40 border border-white/10 focus:outline-none focus:border-indigo-500 text-xs">
-                            <button type="button" id="btnAddCustomCommunity" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-semibold flex items-center gap-1 transition">
-                                <i class="fa-solid fa-plus text-xs"></i> Adicionar
-                            </button>
-                        </div>
-                        <p id="communityError" class="text-rose-400 text-xs mt-1 hidden"><i class="fa-solid fa-circle-exclamation mr-1"></i>Selecione pelo menos uma comunidade.</p>
-                    </div>
-                </div>
-
-                <!-- Day & Times -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider opacity-80 mb-1" for="liveDay">Dia da Semana *</label>
-                        <select id="liveDay" required class="w-full px-3 py-2 rounded-xl bg-black/30 border border-white/10 focus:outline-none focus:border-indigo-500 text-white">
-                            <option value="Segunda-feira" class="bg-gray-900">Segunda-feira</option>
-                            <option value="Terça-feira" class="bg-gray-900">Terça-feira</option>
-                            <option value="Quarta-feira" class="bg-gray-900">Quarta-feira</option>
-                            <option value="Quinta-feira" class="bg-gray-900">Quinta-feira</option>
-                            <option value="Sexta-feira" class="bg-gray-900">Sexta-feira</option>
-                            <option value="Sábado" class="bg-gray-900">Sábado</option>
-                            <option value="Domingo" class="bg-gray-900">Domingo</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider opacity-80 mb-1" for="liveStartTime">Início *</label>
-                        <input type="time" id="liveStartTime" required class="w-full px-3 py-2 rounded-xl bg-black/30 border border-white/10 focus:outline-none focus:border-indigo-500 text-white">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider opacity-80 mb-1" for="liveEndTime">Previsão Fim</label>
-                        <input type="time" id="liveEndTime" class="w-full px-3 py-2 rounded-xl bg-black/30 border border-white/10 focus:outline-none focus:border-indigo-500 text-white">
-                    </div>
-                </div>
-
-                <!-- Direct Link -->
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider opacity-80 mb-1" for="liveUrl">Link Direto da Live / Canal</label>
-                    <div class="relative">
-                        <i class="fa-solid fa-link absolute left-3 top-1/2 -translate-y-1/2 text-xs opacity-50"></i>
-                        <input type="url" id="liveUrl" placeholder="https://twitch.tv/..., tiktok.com/@..., bilibili.com/..." class="w-full pl-9 pr-3 py-2 rounded-xl bg-black/30 border border-white/10 focus:outline-none focus:border-indigo-500 transition">
-                    </div>
-                </div>
-
-                <!-- Notes -->
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider opacity-80 mb-1" for="liveNotes">Observações / Comandos / Metas</label>
-                    <textarea id="liveNotes" rows="2" placeholder="Ex: Meta de subs, sorteio de skins, regras de participação..." class="w-full px-3.5 py-2 rounded-xl bg-black/30 border border-white/10 focus:outline-none focus:border-indigo-500 resize-none transition"></textarea>
-                </div>
-
-                <!-- Actions -->
-                <div class="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
-                    <button type="button" id="btnCancelModal" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold">
-                        Cancelar
-                    </button>
-                    <button type="submit" class="px-5 py-2 rounded-xl custom-accent-bg text-white font-bold text-xs uppercase tracking-wide shadow-md shadow-indigo-600/30">
-                        Salvar Transmissão
-                    </button>
-                </div>
-            </form>
+      <form id="authForm" onsubmit="handleAuthAction(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Usuário</label>
+          <div class="relative">
+            <i class="fa-solid fa-user absolute left-3.5 top-3 text-slate-500 text-xs"></i>
+            <input type="text" id="authUserInput" required placeholder="Digite seu usuário" class="w-full pl-9 pr-3 py-2.5 text-sm bg-slate-950/70 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition" />
+          </div>
         </div>
-    </div>
 
-    <!-- ==================== MODAL: GERENCIAR CREDENCIAIS ==================== -->
-    <div id="accountModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden">
-        <div class="custom-card w-full max-w-md rounded-2xl p-6 shadow-2xl border border-white/15 space-y-4">
-            <div class="flex items-center justify-between pb-3 border-b border-white/10">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-key text-amber-400"></i>
-                    <h2 class="text-lg font-bold heading-font">Alterar Usuário ou Senha</h2>
-                </div>
-                <button id="btnCloseAccountModal" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-sm opacity-70">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <form id="changeCredsForm" onsubmit="handleChangeCredsSubmit(event)" class="space-y-3.5 text-sm">
-                <div>
-                    <label class="block text-xs font-semibold mb-1">Novo Nome de Usuário</label>
-                    <input type="text" id="newUsername" required class="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 focus:outline-none focus:border-indigo-500 text-white">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold mb-1">Senha Atual (Para confirmar)</label>
-                    <input type="password" id="currentPassword" required class="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 focus:outline-none focus:border-indigo-500 text-white">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold mb-1">Nova Senha</label>
-                    <input type="password" id="newPassword" required placeholder="Mínimo 4 caracteres" class="w-full px-3 py-2 rounded-xl bg-black/40 border border-white/10 focus:outline-none focus:border-indigo-500 text-white">
-                </div>
-
-                <div class="flex items-center justify-end gap-2 pt-3 border-t border-white/10">
-                    <button type="button" id="btnCancelAccountModal" class="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-xs font-semibold">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 rounded-xl custom-accent-bg text-white font-bold text-xs">Atualizar Acesso</button>
-                </div>
-            </form>
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Senha</label>
+          <div class="relative">
+            <i class="fa-solid fa-lock absolute left-3.5 top-3 text-slate-500 text-xs"></i>
+            <input type="password" id="authPassInput" required placeholder="Digite sua senha" class="w-full pl-9 pr-10 py-2.5 text-sm bg-slate-950/70 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition" />
+            <button type="button" onclick="togglePassVisibility('authPassInput', 'eyeIcon1')" class="absolute right-3.5 top-3 text-slate-500 hover:text-slate-300">
+              <i id="eyeIcon1" class="fa-solid fa-eye text-xs"></i>
+            </button>
+          </div>
         </div>
-    </div>
 
-    <!-- ==================== MODAL: PERSONALIZADOR DE CORES ==================== -->
-    <div id="colorModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm hidden">
-        <div class="custom-card w-full max-w-md rounded-2xl p-6 shadow-2xl border border-white/15 relative">
-            <div class="flex items-center justify-between pb-4 border-b border-white/10">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-palette text-purple-400 text-lg"></i>
-                    <h2 class="text-lg font-bold heading-font">Personalizar Cores</h2>
-                </div>
-                <button id="btnCloseColorModal" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-sm opacity-70">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <div class="space-y-4 py-4 text-sm">
-                <p class="text-xs opacity-70">Ajuste os tons em tempo real para sincronizar com o visual das suas transmissões.</p>
-
-                <div class="flex items-center justify-between">
-                    <div>
-                        <label class="font-semibold block text-xs uppercase tracking-wide">Cor dos Textos</label>
-                        <span class="text-xs opacity-60">Leitura geral e legendas</span>
-                    </div>
-                    <input type="color" id="pickerText" class="w-10 h-10 rounded-lg cursor-pointer bg-transparent border-0">
-                </div>
-
-                <div class="flex items-center justify-between">
-                    <div>
-                        <label class="font-semibold block text-xs uppercase tracking-wide">Destaque & Títulos</label>
-                        <span class="text-xs opacity-60">Horários, tags e títulos</span>
-                    </div>
-                    <input type="color" id="pickerHighlight" class="w-10 h-10 rounded-lg cursor-pointer bg-transparent border-0">
-                </div>
-
-                <div class="flex items-center justify-between">
-                    <div>
-                        <label class="font-semibold block text-xs uppercase tracking-wide">Acentos & Botões</label>
-                        <span class="text-xs opacity-60">Botões principais de ação</span>
-                    </div>
-                    <input type="color" id="pickerAccent" class="w-10 h-10 rounded-lg cursor-pointer bg-transparent border-0">
-                </div>
-
-                <div class="flex items-center justify-between">
-                    <div>
-                        <label class="font-semibold block text-xs uppercase tracking-wide">Fundo dos Cards</label>
-                        <span class="text-xs opacity-60">Superfícies de cada transmissão</span>
-                    </div>
-                    <input type="color" id="pickerCard" class="w-10 h-10 rounded-lg cursor-pointer bg-transparent border-0">
-                </div>
-
-                <div class="flex items-center justify-between">
-                    <div>
-                        <label class="font-semibold block text-xs uppercase tracking-wide">Fundo da Página</label>
-                        <span class="text-xs opacity-60">Cor de base da aplicação</span>
-                    </div>
-                    <input type="color" id="pickerBg" class="w-10 h-10 rounded-lg cursor-pointer bg-transparent border-0">
-                </div>
-            </div>
-
-            <div class="flex items-center justify-between pt-4 border-t border-white/10 gap-3">
-                <button id="btnResetColors" class="px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-semibold flex items-center gap-1.5">
-                    <i class="fa-solid fa-arrow-rotate-left"></i> Padrão
-                </button>
-                <button id="btnApplyColors" class="px-5 py-2 rounded-xl custom-accent-bg text-white font-bold text-xs uppercase tracking-wide shadow-md shadow-indigo-600/30">
-                    Salvar Cores
-                </button>
-            </div>
+        <!-- Confirmar Senha (Apenas em cadastro ou primeiro acesso) -->
+        <div id="confirmPasswordGroup" class="hidden">
+          <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Confirmar Senha</label>
+          <div class="relative">
+            <i class="fa-solid fa-shield-check absolute left-3.5 top-3 text-slate-500 text-xs"></i>
+            <input type="password" id="authConfirmPassInput" placeholder="Repita sua senha" class="w-full pl-9 pr-10 py-2.5 text-sm bg-slate-950/70 border border-slate-700/80 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition" />
+            <button type="button" onclick="togglePassVisibility('authConfirmPassInput', 'eyeIcon2')" class="absolute right-3.5 top-3 text-slate-500 hover:text-slate-300">
+              <i id="eyeIcon2" class="fa-solid fa-eye text-xs"></i>
+            </button>
+          </div>
         </div>
-    </div>
 
-    <!-- ==================== MODAL: BACKUP & RESTORE ==================== -->
-    <div id="dataModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm hidden">
-        <div class="custom-card w-full max-w-md rounded-2xl p-6 shadow-2xl border border-white/15 space-y-4">
-            <div class="flex items-center justify-between pb-3 border-b border-white/10">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-database text-sky-400"></i>
-                    <h2 class="text-lg font-bold heading-font">Backup & Dados</h2>
-                </div>
-                <button id="btnCloseDataModal" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-sm opacity-70">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <p class="text-xs opacity-70">Exporte seu cronograma completo em arquivo JSON ou restaure um backup salvo.</p>
-
-            <div class="space-y-3">
-                <button id="btnExportJson" class="w-full py-2.5 px-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center gap-2 font-semibold text-xs transition">
-                    <i class="fa-solid fa-download text-emerald-400"></i>
-                    Baixar Backup (.JSON)
-                </button>
-
-                <label class="w-full py-2.5 px-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center gap-2 font-semibold text-xs cursor-pointer transition">
-                    <i class="fa-solid fa-upload text-sky-400"></i>
-                    <span>Restaurar Backup (.JSON)</span>
-                    <input type="file" id="fileImportJson" accept=".json" class="hidden">
-                </label>
-
-                <button id="btnLoadExamples" class="w-full py-2.5 px-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center gap-2 font-semibold text-xs text-amber-400 transition">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    Carregar Grade de Exemplo (TikTok + Bilibili)
-                </button>
-            </div>
-
-            <div class="pt-3 border-t border-white/10 text-right">
-                <button id="btnDoneData" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-semibold">Fechar</button>
-            </div>
+        <!-- Opção de Lembrar Login -->
+        <div id="rememberOptionGroup" class="flex items-center justify-between pt-1">
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input type="checkbox" id="rememberMeCheckbox" class="w-4 h-4 rounded bg-slate-900 border-slate-700 text-purple-600 focus:ring-0" checked />
+            <span class="text-xs text-slate-400 hover:text-slate-300">Permanecer conectado</span>
+          </label>
         </div>
-    </div>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
-        <div class="px-4 py-2.5 rounded-xl bg-gray-900 border border-indigo-500/40 text-white text-xs font-semibold shadow-2xl flex items-center gap-2.5">
-            <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400"></i>
-            <span id="toastMsg">Operação realizada com sucesso!</span>
+        <button type="submit" id="authSubmitButton" class="w-full mt-2 py-3 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-lg shadow-purple-600/30 transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-right-to-bracket"></i> <span>Entrar no Painel</span>
+        </button>
+      </form>
+
+      <div class="mt-6 pt-4 border-t border-white/5 text-center">
+        <p class="text-[11px] text-slate-500 flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-shield-halved text-emerald-400"></i> Proteção local com SHA-256 Web Crypto
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= CABEÇALHO DO PAINEL ================= -->
+  <header class="no-print border-b border-white/5 bg-[#080a11]/80 backdrop-blur-md sticky top-0 z-40 px-4 sm:px-8 py-3.5 transition-colors">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- Brand & Status -->
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center text-white text-lg font-black shadow-lg shadow-purple-600/25">
+          <i class="fa-solid fa-satellite-dish"></i>
         </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-black text-white heading-font flex items-center gap-2">
+            StreamHub <span class="text-purple-400">Pro</span>
+            <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Ativo</span>
+          </h1>
+          <p class="text-xs text-slate-400">Usuário: <span id="activeUserHeader" class="text-purple-300 font-bold">---</span></p>
+        </div>
+      </div>
+
+      <!-- Alternador de Visão: Cards vs Grade Semanal (Calendário) -->
+      <div class="flex items-center bg-slate-900/90 p-1 rounded-xl border border-white/10 shadow-inner">
+        <button id="viewBtnCards" onclick="changeDashboardView('cards')" class="px-3.5 py-1.5 text-xs font-bold rounded-lg transition flex items-center gap-1.5 bg-purple-600 text-white shadow">
+          <i class="fa-solid fa-table-cells-large"></i> <span>Cards</span>
+        </button>
+        <button id="viewBtnCalendar" onclick="changeDashboardView('calendar')" class="px-3.5 py-1.5 text-xs font-bold rounded-lg transition flex items-center gap-1.5 text-slate-400 hover:text-white">
+          <i class="fa-solid fa-calendar-week"></i> <span>Grade Semanal</span>
+        </button>
+      </div>
+
+      <!-- Barra de Ferramentas / Ações Rápidas -->
+      <div class="flex items-center flex-wrap gap-2">
+        <button onclick="openColorModal()" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-800 flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-palette text-purple-400"></i> <span class="hidden sm:inline">Cores</span>
+        </button>
+        <button onclick="openCredentialsModal()" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-800 flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-key text-amber-400"></i> <span class="hidden sm:inline">Acesso</span>
+        </button>
+        <button onclick="openBackupModal()" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-800 flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-database text-sky-400"></i> <span class="hidden sm:inline">Backup</span>
+        </button>
+        <button onclick="window.print()" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-800 flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-print text-emerald-400"></i> <span class="hidden sm:inline">Imprimir</span>
+        </button>
+        <button onclick="logoutAction()" class="px-3 py-1.5 rounded-xl bg-rose-950/40 hover:bg-rose-900/50 text-xs font-semibold text-rose-300 border border-rose-800/40 flex items-center gap-1.5 transition" title="Sair">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> <span class="hidden sm:inline">Sair</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6 flex-1">
+
+    <!-- MÉTRICAS INDIVIDUAIS SEPARADAS -->
+    <section class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+      <!-- 1. Total Lives -->
+      <div class="glass-card p-3.5 rounded-2xl flex flex-col justify-between shadow-sm">
+        <span class="text-[10px] font-black uppercase text-slate-400 tracking-wider">Total Lives</span>
+        <div id="statTotalLives" class="text-2xl font-black text-white mt-1 heading-font">0</div>
+      </div>
+      <!-- 2. Comunidades -->
+      <div class="glass-card p-3.5 rounded-2xl flex flex-col justify-between shadow-sm">
+        <span class="text-[10px] font-black uppercase text-pink-400 tracking-wider flex items-center gap-1">
+          <i class="fa-solid fa-users text-xs"></i> Comunidades
+        </span>
+        <div id="statTotalCommunities" class="text-2xl font-black text-pink-400 mt-1 heading-font">0</div>
+      </div>
+      <!-- 3. Twitch -->
+      <div class="glass-card p-3.5 rounded-2xl flex flex-col justify-between shadow-sm border-l-4 border-l-[#9146FF]">
+        <span class="text-[10px] font-black uppercase text-[#9146FF] tracking-wider flex items-center gap-1">
+          <i class="fa-brands fa-twitch text-xs"></i> Twitch
+        </span>
+        <div id="statTwitch" class="text-2xl font-black text-[#9146FF] mt-1 heading-font">0</div>
+      </div>
+      <!-- 4. YouTube -->
+      <div class="glass-card p-3.5 rounded-2xl flex flex-col justify-between shadow-sm border-l-4 border-l-[#FF0000]">
+        <span class="text-[10px] font-black uppercase text-[#FF0000] tracking-wider flex items-center gap-1">
+          <i class="fa-brands fa-youtube text-xs"></i> YouTube
+        </span>
+        <div id="statYouTube" class="text-2xl font-black text-[#FF0000] mt-1 heading-font">0</div>
+      </div>
+      <!-- 5. Kick -->
+      <div class="glass-card p-3.5 rounded-2xl flex flex-col justify-between shadow-sm border-l-4 border-l-[#53FC18]">
+        <span class="text-[10px] font-black uppercase text-[#53FC18] tracking-wider flex items-center gap-1">
+          <i class="fa-solid fa-bolt text-xs"></i> Kick
+        </span>
+        <div id="statKick" class="text-2xl font-black text-[#53FC18] mt-1 heading-font">0</div>
+      </div>
+      <!-- 6. TikTok -->
+      <div class="glass-card p-3.5 rounded-2xl flex flex-col justify-between shadow-sm border-l-4 border-l-[#FE2C55]">
+        <span class="text-[10px] font-black uppercase text-[#FE2C55] tracking-wider flex items-center gap-1">
+          <i class="fa-brands fa-tiktok text-xs"></i> TikTok
+        </span>
+        <div id="statTikTok" class="text-2xl font-black text-[#FE2C55] mt-1 heading-font">0</div>
+      </div>
+      <!-- 7. Bilibili -->
+      <div class="glass-card p-3.5 rounded-2xl flex flex-col justify-between shadow-sm border-l-4 border-l-[#00AEEC]">
+        <span class="text-[10px] font-black uppercase text-[#00AEEC] tracking-wider flex items-center gap-1">
+          <i class="fa-brands fa-bilibili text-xs"></i> Bilibili
+        </span>
+        <div id="statBilibili" class="text-2xl font-black text-[#00AEEC] mt-1 heading-font">0</div>
+      </div>
+    </section>
+
+    <!-- BARRA DE PESQUISA, FILTROS E AGRUPAMENTO -->
+    <section class="glass-card p-4 rounded-2xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 no-print shadow-sm">
+      
+      <!-- Input de Pesquisa -->
+      <div class="relative flex-1">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-xs text-slate-500"></i>
+        <input type="text" id="scheduleSearchInput" oninput="handleSearchChange(this.value)" placeholder="Pesquisar por título, comunidade ou anotações..." class="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-slate-950/60 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition" />
+      </div>
+
+      <!-- Filtros Rápidos de Plataforma -->
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
+        <button onclick="setPlatformFilter('all')" id="btnFilter-all" class="px-3 py-1.5 rounded-xl text-xs font-bold transition bg-purple-600 text-white shadow whitespace-nowrap">Todos</button>
+        <button onclick="setPlatformFilter('Twitch')" id="btnFilter-Twitch" class="px-2.5 py-1.5 rounded-xl text-xs font-bold transition bg-slate-900 text-slate-300 hover:text-white border border-slate-800 flex items-center gap-1 whitespace-nowrap"><i class="fa-brands fa-twitch text-[#9146FF]"></i> Twitch</button>
+        <button onclick="setPlatformFilter('YouTube')" id="btnFilter-YouTube" class="px-2.5 py-1.5 rounded-xl text-xs font-bold transition bg-slate-900 text-slate-300 hover:text-white border border-slate-800 flex items-center gap-1 whitespace-nowrap"><i class="fa-brands fa-youtube text-[#FF0000]"></i> YouTube</button>
+        <button onclick="setPlatformFilter('Kick')" id="btnFilter-Kick" class="px-2.5 py-1.5 rounded-xl text-xs font-bold transition bg-slate-900 text-slate-300 hover:text-white border border-slate-800 flex items-center gap-1 whitespace-nowrap"><i class="fa-solid fa-bolt text-[#53FC18]"></i> Kick</button>
+        <button onclick="setPlatformFilter('TikTok')" id="btnFilter-TikTok" class="px-2.5 py-1.5 rounded-xl text-xs font-bold transition bg-slate-900 text-slate-300 hover:text-white border border-slate-800 flex items-center gap-1 whitespace-nowrap"><i class="fa-brands fa-tiktok text-[#FE2C55]"></i> TikTok</button>
+        <button onclick="setPlatformFilter('Bilibili')" id="btnFilter-Bilibili" class="px-2.5 py-1.5 rounded-xl text-xs font-bold transition bg-slate-900 text-slate-300 hover:text-white border border-slate-800 flex items-center gap-1 whitespace-nowrap"><i class="fa-brands fa-bilibili text-[#00AEEC]"></i> Bilibili</button>
+      </div>
+
+      <div class="flex items-center gap-2.5">
+        <!-- Controle de Agrupamento -->
+        <div id="groupSelectWrapper" class="flex items-center gap-1.5">
+          <span class="text-xs text-slate-400 font-semibold whitespace-nowrap">Agrupar:</span>
+          <select id="groupBySelect" onchange="handleGroupChange(this.value)" class="bg-slate-900 border border-slate-800 text-xs rounded-xl px-2.5 py-1.5 text-slate-200 focus:outline-none focus:border-purple-500 font-semibold">
+            <option value="day">Dia da Semana</option>
+            <option value="community">Comunidades</option>
+            <option value="platform">Plataformas</option>
+          </select>
+        </div>
+
+        <!-- Botão Adicionar Live -->
+        <button onclick="openLiveModal()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-xs font-bold uppercase tracking-wider text-white flex items-center gap-1.5 shadow-lg shadow-purple-600/30 transition whitespace-nowrap">
+          <i class="fa-solid fa-plus"></i> <span>Nova Live</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ================= 1. VISÃO EM CARDS ================= -->
+    <div id="cardsDashboardView" class="space-y-8">
+      <div id="cardsContainer" class="space-y-8">
+        <!-- Preenchido via JavaScript -->
+      </div>
     </div>
 
-    <script>
-        // Storage Keys
-        const STORAGE_KEY_CREDS = 'streamhub_credentials_secure_v1';
-        const STORAGE_KEY_SESSION = 'streamhub_active_session_v1';
-        const STORAGE_KEY_LIVES = 'streamhub_schedule_items_v2';
-        const STORAGE_KEY_THEME = 'streamhub_schedule_theme_v2';
+    <!-- ================= 2. VISÃO EM GRADE SEMANAL (CALENDÁRIO DE SEG A DOM) ================= -->
+    <div id="calendarDashboardView" class="hidden">
+      <div class="overflow-x-auto pb-4">
+        <div class="grid grid-cols-7 gap-3 min-w-[1080px]">
+          
+          <!-- Segunda-feira -->
+          <div class="glass-card rounded-2xl p-3.5 flex flex-col gap-3 min-h-[440px] border-t-2 border-t-purple-500">
+            <div class="text-center pb-2 border-b border-white/5 font-extrabold text-xs uppercase tracking-wider text-purple-400 flex items-center justify-center gap-1.5">
+              <i class="fa-regular fa-calendar text-[11px]"></i> Segunda
+            </div>
+            <div id="calCol-Segunda-feira" class="space-y-2.5 flex-1"></div>
+          </div>
 
-        // Helper: SHA-256 Hash via Web Crypto API
-        async function sha256(str) {
-            const buffer = new TextEncoder().encode(str);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
-            return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+          <!-- Terça-feira -->
+          <div class="glass-card rounded-2xl p-3.5 flex flex-col gap-3 min-h-[440px] border-t-2 border-t-purple-500">
+            <div class="text-center pb-2 border-b border-white/5 font-extrabold text-xs uppercase tracking-wider text-purple-400 flex items-center justify-center gap-1.5">
+              <i class="fa-regular fa-calendar text-[11px]"></i> Terça
+            </div>
+            <div id="calCol-Terça-feira" class="space-y-2.5 flex-1"></div>
+          </div>
+
+          <!-- Quarta-feira -->
+          <div class="glass-card rounded-2xl p-3.5 flex flex-col gap-3 min-h-[440px] border-t-2 border-t-purple-500">
+            <div class="text-center pb-2 border-b border-white/5 font-extrabold text-xs uppercase tracking-wider text-purple-400 flex items-center justify-center gap-1.5">
+              <i class="fa-regular fa-calendar text-[11px]"></i> Quarta
+            </div>
+            <div id="calCol-Quarta-feira" class="space-y-2.5 flex-1"></div>
+          </div>
+
+          <!-- Quinta-feira -->
+          <div class="glass-card rounded-2xl p-3.5 flex flex-col gap-3 min-h-[440px] border-t-2 border-t-purple-500">
+            <div class="text-center pb-2 border-b border-white/5 font-extrabold text-xs uppercase tracking-wider text-purple-400 flex items-center justify-center gap-1.5">
+              <i class="fa-regular fa-calendar text-[11px]"></i> Quinta
+            </div>
+            <div id="calCol-Quinta-feira" class="space-y-2.5 flex-1"></div>
+          </div>
+
+          <!-- Sexta-feira -->
+          <div class="glass-card rounded-2xl p-3.5 flex flex-col gap-3 min-h-[440px] border-t-2 border-t-pink-500">
+            <div class="text-center pb-2 border-b border-white/5 font-extrabold text-xs uppercase tracking-wider text-pink-400 flex items-center justify-center gap-1.5">
+              <i class="fa-regular fa-calendar text-[11px]"></i> Sexta
+            </div>
+            <div id="calCol-Sexta-feira" class="space-y-2.5 flex-1"></div>
+          </div>
+
+          <!-- Sábado -->
+          <div class="glass-card rounded-2xl p-3.5 flex flex-col gap-3 min-h-[440px] border-t-2 border-t-pink-500">
+            <div class="text-center pb-2 border-b border-white/5 font-extrabold text-xs uppercase tracking-wider text-pink-400 flex items-center justify-center gap-1.5">
+              <i class="fa-regular fa-calendar text-[11px]"></i> Sábado
+            </div>
+            <div id="calCol-Sábado" class="space-y-2.5 flex-1"></div>
+          </div>
+
+          <!-- Domingo -->
+          <div class="glass-card rounded-2xl p-3.5 flex flex-col gap-3 min-h-[440px] border-t-2 border-t-pink-500">
+            <div class="text-center pb-2 border-b border-white/5 font-extrabold text-xs uppercase tracking-wider text-pink-400 flex items-center justify-center gap-1.5">
+              <i class="fa-regular fa-calendar text-[11px]"></i> Domingo
+            </div>
+            <div id="calCol-Domingo" class="space-y-2.5 flex-1"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyScheduleNotice" class="hidden text-center py-16 px-4 glass-card rounded-3xl border border-white/5">
+      <div class="w-16 h-16 mx-auto rounded-2xl bg-white/5 flex items-center justify-center text-2xl text-slate-500 mb-3 border border-white/10">
+        <i class="fa-solid fa-calendar-xmark"></i>
+      </div>
+      <h3 class="text-base font-bold text-white">Nenhuma transmissão cadastrada</h3>
+      <p class="text-xs text-slate-400 max-w-sm mx-auto mt-1">Clique em "Nova Live" para agendar transmissões das comunidades.</p>
+      <button onclick="openLiveModal()" class="mt-4 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold uppercase tracking-wider shadow-lg shadow-purple-600/30">
+        Adicionar Primeira Live
+      </button>
+    </div>
+
+  </main>
+
+  <!-- ================= MODAL ADICIONAR / EDITAR LIVE ================= -->
+  <div id="liveModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+    <div class="w-full max-w-xl glass-card rounded-3xl p-6 sm:p-7 shadow-2xl border border-white/10 relative my-8">
+      
+      <div class="flex items-center justify-between pb-3 border-b border-white/5">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-purple-600/20 text-purple-400 flex items-center justify-center text-sm">
+            <i class="fa-solid fa-headset"></i>
+          </div>
+          <h3 id="modalLiveTitle" class="text-base font-bold text-white heading-font">Agendar Transmissão</h3>
+        </div>
+        <button onclick="closeLiveModal()" class="text-slate-400 hover:text-white text-base"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="liveForm" onsubmit="handleLiveFormSubmit(event)" class="space-y-4 mt-4 text-xs">
+        <input type="hidden" id="liveFormId" />
+
+        <!-- Título -->
+        <div>
+          <label class="block font-bold text-slate-300 uppercase tracking-wider mb-1">Título da Transmissão / Assunto *</label>
+          <input type="text" id="liveFormTitle" required placeholder="Ex: Farm de Equipamentos, Guerra de Facções, Resenha Noturna" class="w-full px-3.5 py-2.5 bg-slate-950/70 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition text-xs" />
+        </div>
+
+        <!-- Plataformas de Transmissão (Multistream) -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="font-bold text-slate-300 uppercase tracking-wider">Onde Assistir (Plataformas) *</label>
+            <span class="text-[10px] text-purple-400">Selecione uma ou mais</span>
+          </div>
+          <div id="modalPlatformChips" class="flex flex-wrap gap-2 p-2 rounded-xl bg-slate-950/50 border border-slate-800">
+            <!-- Chips gerados via JS -->
+          </div>
+          <p id="platformErrorMsg" class="hidden text-[10px] text-rose-400 mt-1 font-semibold">Selecione pelo menos uma plataforma.</p>
+        </div>
+
+        <!-- Comunidades Participantes -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="font-bold text-slate-300 uppercase tracking-wider">Comunidades Participantes *</label>
+            <span class="text-[10px] text-pink-400">Selecione as envolvidas</span>
+          </div>
+          <div id="modalCommunityChips" class="flex flex-wrap gap-1.5 p-2 rounded-xl bg-slate-950/50 border border-slate-800">
+            <!-- Chips gerados via JS -->
+          </div>
+          <!-- Inserir comunidade extra -->
+          <div class="mt-2 flex gap-2">
+            <input type="text" id="customCommunityInput" placeholder="Adicionar outra comunidade parceira..." class="flex-1 px-3 py-1.5 bg-slate-950/70 border border-slate-800 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 text-[11px]" />
+            <button type="button" onclick="handleAddCustomCommunity()" class="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-[11px] font-bold text-slate-200 transition">
+              <i class="fa-solid fa-plus"></i> Adicionar
+            </button>
+          </div>
+          <p id="communityErrorMsg" class="hidden text-[10px] text-rose-400 mt-1 font-semibold">Selecione pelo menos uma comunidade.</p>
+        </div>
+
+        <!-- Dia e Horários -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block font-bold text-slate-300 uppercase tracking-wider mb-1">Dia da Semana *</label>
+            <select id="liveFormDay" required class="w-full px-3 py-2 bg-slate-950/70 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-purple-500">
+              <option value="Segunda-feira">Segunda-feira</option>
+              <option value="Terça-feira">Terça-feira</option>
+              <option value="Quarta-feira">Quarta-feira</option>
+              <option value="Quinta-feira">Quinta-feira</option>
+              <option value="Sexta-feira">Sexta-feira</option>
+              <option value="Sábado">Sábado</option>
+              <option value="Domingo">Domingo</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 uppercase tracking-wider mb-1">Início *</label>
+            <input type="time" id="liveFormStartTime" required class="w-full px-3 py-2 bg-slate-950/70 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-purple-500" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-300 uppercase tracking-wider mb-1">Previsão Término</label>
+            <input type="time" id="liveFormEndTime" class="w-full px-3 py-2 bg-slate-950/70 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-purple-500" />
+          </div>
+        </div>
+
+        <!-- Link Direto -->
+        <div>
+          <label class="block font-bold text-slate-300 uppercase tracking-wider mb-1">Link Direto da Transmissão (Opcional)</label>
+          <div class="relative">
+            <i class="fa-solid fa-link absolute left-3 top-2.5 text-slate-500 text-xs"></i>
+            <input type="url" id="liveFormUrl" placeholder="https://twitch.tv/..., tiktok.com/@..., youtube.com/..." class="w-full pl-8 pr-3 py-2 bg-slate-950/70 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 transition text-xs" />
+          </div>
+        </div>
+
+        <!-- Observações -->
+        <div>
+          <label class="block font-bold text-slate-300 uppercase tracking-wider mb-1">Anotações / Metas / Pauta</label>
+          <textarea id="liveFormNotes" rows="2" placeholder="Ex: Sorteio especial às 22h, metas de seguidores, drops ativados..." class="w-full px-3 py-2 bg-slate-950/70 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 text-xs resize-none"></textarea>
+        </div>
+
+        <!-- Ações do Modal -->
+        <div class="flex items-center justify-end gap-2 pt-3 border-t border-white/5">
+          <button type="button" onclick="closeLiveModal()" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 font-bold text-slate-300 border border-slate-800">Cancelar</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 text-white font-bold uppercase tracking-wider shadow-lg shadow-purple-600/30">Salvar Live</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <!-- ================= MODAL ALTERAR CREDENCIAIS ================= -->
+  <div id="credentialsModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="w-full max-w-sm glass-card rounded-3xl p-6 shadow-2xl border border-white/10 relative">
+      <div class="flex items-center justify-between pb-3 border-b border-white/5 mb-4">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-key text-amber-400"></i> Alterar Credenciais
+        </h3>
+        <button onclick="closeCredentialsModal()" class="text-slate-400 hover:text-white text-base"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div id="credFeedbackAlert" class="hidden mb-3 p-2.5 rounded-xl text-xs font-semibold border"></div>
+
+      <form onsubmit="handleUpdateCredentials(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Novo Nome de Usuário</label>
+          <input type="text" id="credNewUsername" required class="w-full px-3 py-2 bg-slate-950/70 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-purple-500" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Senha Atual (Confirmação)</label>
+          <input type="password" id="credCurrentPassword" required class="w-full px-3 py-2 bg-slate-950/70 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-purple-500" />
+        </div>
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Nova Senha</label>
+          <input type="password" id="credNewPassword" required placeholder="Mínimo 4 caracteres" class="w-full px-3 py-2 bg-slate-950/70 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-purple-500" />
+        </div>
+        <div class="flex justify-end gap-2 pt-2 border-t border-white/5">
+          <button type="button" onclick="closeCredentialsModal()" class="px-3 py-1.5 rounded-xl bg-slate-900 text-slate-300 border border-slate-800 font-bold">Cancelar</button>
+          <button type="submit" class="px-4 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 font-bold text-white shadow">Atualizar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= MODAL PERSONALIZAÇÃO DE CORES ================= -->
+  <div id="colorModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="w-full max-w-md glass-card rounded-3xl p-6 shadow-2xl border border-white/10 relative">
+      <div class="flex items-center justify-between pb-3 border-b border-white/5 mb-4">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-palette text-purple-400"></i> Personalização de Cores
+        </h3>
+        <button onclick="closeColorModal()" class="text-slate-400 hover:text-white text-base"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="font-bold text-slate-200 block">Cor de Acento / Botões</span>
+            <span class="text-[10px] text-slate-500">Elementos de ação principal</span>
+          </div>
+          <input type="color" id="pickerAccent" onchange="applyCustomColor('--accent-color', this.value)" class="w-10 h-8 rounded-lg cursor-pointer bg-transparent border-0" value="#a855f7" />
+        </div>
+
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="font-bold text-slate-200 block">Fundo da Aplicação</span>
+            <span class="text-[10px] text-slate-500">Base principal da tela</span>
+          </div>
+          <input type="color" id="pickerBg" onchange="applyCustomColor('--bg-color', this.value)" class="w-10 h-8 rounded-lg cursor-pointer bg-transparent border-0" value="#080a11" />
+        </div>
+
+        <div class="flex items-center justify-between">
+          <div>
+            <span class="font-bold text-slate-200 block">Fundo dos Cartões</span>
+            <span class="text-[10px] text-slate-500">Superfície dos blocos de transmissão</span>
+          </div>
+          <input type="color" id="pickerCard" onchange="applyCustomColor('--card-bg', this.value)" class="w-10 h-8 rounded-lg cursor-pointer bg-transparent border-0" value="#121625" />
+        </div>
+
+        <div class="pt-3 border-t border-white/5 flex justify-between items-center gap-2">
+          <button onclick="resetDefaultThemeColors()" class="px-3 py-1.5 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 font-bold hover:text-white">Restaurar Padrão</button>
+          <button onclick="closeColorModal()" class="px-4 py-1.5 rounded-xl bg-purple-600 text-white font-bold shadow">Concluir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL BACKUP & JSON ================= -->
+  <div id="backupModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="w-full max-w-md glass-card rounded-3xl p-6 shadow-2xl border border-white/10 relative space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-white/5">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-database text-sky-400"></i> Backup & Restauração
+        </h3>
+        <button onclick="closeBackupModal()" class="text-slate-400 hover:text-white text-base"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <p class="text-xs text-slate-400">Exporte toda a sua grade semanal em formato JSON ou faça upload de um backup salvo anteriormente.</p>
+
+      <div class="space-y-2.5">
+        <button onclick="exportJsonFile()" class="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 flex items-center justify-center gap-2 text-xs font-bold text-white transition">
+          <i class="fa-solid fa-download text-emerald-400"></i> Baixar Arquivo JSON
+        </button>
+
+        <label class="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 flex items-center justify-center gap-2 text-xs font-bold text-white cursor-pointer transition">
+          <i class="fa-solid fa-upload text-sky-400"></i> <span>Importar Arquivo JSON</span>
+          <input type="file" id="jsonFileInput" accept=".json" onchange="importJsonFile(event)" class="hidden" />
+        </label>
+      </div>
+
+      <div class="pt-2 border-t border-white/5 text-right">
+        <button onclick="closeBackupModal()" class="px-3 py-1.5 rounded-xl bg-slate-900 text-xs font-bold text-slate-300 border border-slate-800">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastNotification" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+    <div class="px-4 py-2.5 rounded-xl bg-slate-900 border border-purple-500/40 text-white text-xs font-bold shadow-2xl flex items-center gap-2.5">
+      <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400"></i>
+      <span id="toastMessage">Operação realizada com sucesso!</span>
+    </div>
+  </div>
+
+  <script>
+    // Storage Keys
+    const KEY_LIVES = 'streamhub_pro_lives_data_v2';
+    const KEY_AUTH = 'streamhub_pro_auth_creds_v2';
+    const KEY_SESSION = 'streamhub_pro_session_v2';
+    const KEY_THEME = 'streamhub_pro_theme_v2';
+
+    // Configurações das Comunidades
+    const DEFAULT_COMMUNITIES = ['Legacy', 'TGT', 'Evolution', 'Godys', 'Enigma', 'SkyVolk'];
+    const COMMUNITY_COLORS = {
+      Legacy: { bg: 'bg-amber-500/15', text: 'text-amber-400', border: 'border-amber-500/35', dot: '#f59e0b' },
+      TGT: { bg: 'bg-blue-500/15', text: 'text-blue-400', border: 'border-blue-500/35', dot: '#3b82f6' },
+      Evolution: { bg: 'bg-emerald-500/15', text: 'text-emerald-400', border: 'border-emerald-500/35', dot: '#10b981' },
+      Godys: { bg: 'bg-purple-500/15', text: 'text-purple-400', border: 'border-purple-500/35', dot: '#a855f7' },
+      Enigma: { bg: 'bg-rose-500/15', text: 'text-rose-400', border: 'border-rose-500/35', dot: '#f43f5e' },
+      SkyVolk: { bg: 'bg-cyan-500/15', text: 'text-cyan-400', border: 'border-cyan-500/35', dot: '#06b6d4' },
+      default: { bg: 'bg-indigo-500/15', text: 'text-indigo-400', border: 'border-indigo-500/35', dot: '#6366f1' }
+    };
+
+    // Configurações das Plataformas
+    const PLATFORM_CONFIG = {
+      Twitch: { icon: 'fa-brands fa-twitch', color: 'text-[#9146FF]', border: 'border-[#9146FF]', bg: 'bg-[#9146FF]/15', ring: 'ring-[#9146FF]' },
+      YouTube: { icon: 'fa-brands fa-youtube', color: 'text-[#FF0000]', border: 'border-[#FF0000]', bg: 'bg-[#FF0000]/15', ring: 'ring-[#FF0000]' },
+      Kick: { icon: 'fa-solid fa-bolt', color: 'text-[#53FC18]', border: 'border-[#53FC18]', bg: 'bg-[#53FC18]/15', ring: 'ring-[#53FC18]' },
+      TikTok: { icon: 'fa-brands fa-tiktok', color: 'text-[#FE2C55]', border: 'border-[#FE2C55]', bg: 'bg-[#FE2C55]/15', ring: 'ring-[#FE2C55]' },
+      Bilibili: { icon: 'fa-brands fa-bilibili', color: 'text-[#00AEEC]', border: 'border-[#00AEEC]', bg: 'bg-[#00AEEC]/15', ring: 'ring-[#00AEEC]' }
+    };
+
+    const DAYS_ORDER = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado', 'Domingo'];
+
+    // Estado da Aplicação
+    let lives = [];
+    let communitiesCatalog = [...DEFAULT_COMMUNITIES];
+    let selectedModalPlatforms = new Set(['Twitch']);
+    let selectedModalCommunities = new Set(['Legacy']);
+    let currentPlatformFilter = 'all';
+    let currentGroupBy = 'day';
+    let activeDashboardView = 'cards'; // 'cards' ou 'calendar'
+    let currentSearchTerm = '';
+    let authMode = 'login'; // 'login' ou 'register'
+
+    // SHA-256 via Web Crypto API nativa do navegador
+    async function computeSha256(plainText) {
+      const buffer = new TextEncoder().encode(plainText);
+      const digest = await crypto.subtle.digest('SHA-256', buffer);
+      return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    // Inicialização da Página
+    window.addEventListener('DOMContentLoaded', () => {
+      loadThemePreferences();
+      loadLivesState();
+      checkAuthSession();
+      renderAllComponents();
+    });
+
+    function checkAuthSession() {
+      const savedCreds = localStorage.getItem(KEY_AUTH);
+      const activeSession = localStorage.getItem(KEY_SESSION) || sessionStorage.getItem(KEY_SESSION);
+
+      if (!savedCreds) {
+        // Primeiro acesso sem senhas de fábrica
+        document.getElementById('authOverlay').classList.remove('hidden');
+        setAuthViewMode('register', true);
+        showAuthAlert('Primeiro Acesso: crie seu usuário e senha exclusivos.', 'info');
+        return;
+      }
+
+      if (activeSession) {
+        try {
+          const sessionObj = JSON.parse(activeSession);
+          document.getElementById('activeUserHeader').textContent = sessionObj.user || 'Streamer';
+          document.getElementById('authOverlay').classList.add('hidden');
+          return;
+        } catch (e) {
+          logoutAction();
+        }
+      }
+
+      // Credenciais existem, mas não há sessão ativa
+      document.getElementById('authOverlay').classList.remove('hidden');
+      setAuthViewMode('login', false);
+    }
+
+    function setAuthViewMode(mode, isFirstTime = false) {
+      authMode = mode;
+      const tabLogin = document.getElementById('tabLoginBtn');
+      const tabReg = document.getElementById('tabRegisterBtn');
+      const tabsBox = document.getElementById('authTabsContainer');
+      const confirmGroup = document.getElementById('confirmPasswordGroup');
+      const rememberGroup = document.getElementById('rememberOptionGroup');
+      const submitBtn = document.getElementById('authSubmitButton');
+      const title = document.getElementById('authScreenTitle');
+      const subtitle = document.getElementById('authScreenSubtitle');
+      const alertBanner = document.getElementById('authAlertBanner');
+      alertBanner.classList.add('hidden');
+
+      if (isFirstTime) {
+        tabsBox.classList.add('hidden');
+        confirmGroup.classList.remove('hidden');
+        rememberGroup.classList.add('hidden');
+        title.textContent = 'Configuração Inicial';
+        subtitle.textContent = 'Nenhuma senha padrão pré-definida. Escolha seu acesso.';
+        submitBtn.innerHTML = '<i class="fa-solid fa-key"></i> <span>Criar Acesso e Entrar</span>';
+        return;
+      }
+
+      tabsBox.classList.remove('hidden');
+
+      if (mode === 'login') {
+        tabLogin.className = 'flex-1 py-2 text-xs font-bold rounded-lg transition bg-purple-600 text-white shadow';
+        tabReg.className = 'flex-1 py-2 text-xs font-bold rounded-lg transition text-slate-400 hover:text-white';
+        confirmGroup.classList.add('hidden');
+        rememberGroup.classList.remove('hidden');
+        title.textContent = 'StreamHub Pro';
+        subtitle.textContent = 'Entre com seu usuário e senha cadastrados';
+        submitBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> <span>Entrar no Painel</span>';
+      } else {
+        tabReg.className = 'flex-1 py-2 text-xs font-bold rounded-lg transition bg-purple-600 text-white shadow';
+        tabLogin.className = 'flex-1 py-2 text-xs font-bold rounded-lg transition text-slate-400 hover:text-white';
+        confirmGroup.classList.remove('hidden');
+        rememberGroup.classList.add('hidden');
+        title.textContent = 'Criar Credenciais';
+        subtitle.textContent = 'Cadastre um novo usuário e senha para sua máquina';
+        submitBtn.innerHTML = '<i class="fa-solid fa-user-plus"></i> <span>Cadastrar e Conectar</span>';
+      }
+    }
+
+    async function handleAuthAction(e) {
+      e.preventDefault();
+      const userVal = document.getElementById('authUserInput').value.trim();
+      const passVal = document.getElementById('authPassInput').value;
+
+      if (!userVal || !passVal) return;
+
+      if (authMode === 'register') {
+        const confirmVal = document.getElementById('authConfirmPassInput').value;
+        if (passVal !== confirmVal) {
+          showAuthAlert('As senhas não coincidem.', 'error');
+          return;
+        }
+        if (passVal.length < 4) {
+          showAuthAlert('A senha deve ter no mínimo 4 caracteres.', 'error');
+          return;
         }
 
-        let authCurrentMode = 'login'; // 'login' | 'register'
+        const hashed = await computeSha256(passVal);
+        localStorage.setItem(KEY_AUTH, JSON.stringify({ username: userVal, passwordHash: hashed }));
 
-        function checkAuthentication() {
-            const rawCreds = localStorage.getItem(STORAGE_KEY_CREDS);
-            const activeSession = localStorage.getItem(STORAGE_KEY_SESSION) || sessionStorage.getItem(STORAGE_KEY_SESSION);
+        const remember = document.getElementById('rememberMeCheckbox').checked;
+        const sessionPayload = JSON.stringify({ user: userVal, timestamp: Date.now() });
+        if (remember) localStorage.setItem(KEY_SESSION, sessionPayload);
+        else sessionStorage.setItem(KEY_SESSION, sessionPayload);
 
-            // Case 1: First time user, no credentials set up yet
-            if (!rawCreds) {
-                document.getElementById('authScreen').classList.remove('hidden');
-                document.getElementById('appContainer').classList.add('hidden');
-                setAuthMode('register', true);
-                showAuthAlert('Primeiro Acesso: Crie suas credenciais para proteger o painel local.', 'info');
-                return;
-            }
-
-            // Case 2: Credentials exist and valid session is active
-            if (activeSession) {
-                try {
-                    const session = JSON.parse(activeSession);
-                    document.getElementById('loggedUserDisplay').textContent = session.user || 'Admin';
-                    document.getElementById('authScreen').classList.add('hidden');
-                    document.getElementById('appContainer').classList.remove('hidden');
-                    return;
-                } catch (e) {
-                    logoutAction();
-                }
-            }
-
-            // Case 3: Credentials exist but user is not logged in
-            document.getElementById('authScreen').classList.remove('hidden');
-            document.getElementById('appContainer').classList.add('hidden');
-            setAuthMode('login', false);
+        document.getElementById('activeUserHeader').textContent = userVal;
+        document.getElementById('authOverlay').classList.add('hidden');
+        showToastNotification(`Bem-vindo, ${userVal}!`);
+      } else {
+        const storedRaw = localStorage.getItem(KEY_AUTH);
+        if (!storedRaw) {
+          showAuthAlert('Nenhum acesso configurado. Crie seu login primeiro.', 'error');
+          return;
         }
 
-        function setAuthMode(mode, isFirstTime = false) {
-            authCurrentMode = mode;
-            document.getElementById('authAlert').classList.add('hidden');
+        const creds = JSON.parse(storedRaw);
+        const hashedAttempt = await computeSha256(passVal);
 
-            const tabLogin = document.getElementById('tabBtnLogin');
-            const tabRegister = document.getElementById('tabBtnRegister');
-            const confirmBlock = document.getElementById('confirmPasswordBlock');
-            const rememberBlock = document.getElementById('rememberBlock');
-            const authTitle = document.getElementById('authTitle');
-            const authSubtitle = document.getElementById('authSubtitle');
-            const submitBtn = document.getElementById('authSubmitBtn');
-            const tabsContainer = document.getElementById('authTabsContainer');
+        if (creds.username.toLowerCase() === userVal.toLowerCase() && creds.passwordHash === hashedAttempt) {
+          const remember = document.getElementById('rememberMeCheckbox').checked;
+          const sessionPayload = JSON.stringify({ user: creds.username, timestamp: Date.now() });
 
-            if (isFirstTime) {
-                tabsContainer.classList.add('hidden');
-                confirmBlock.classList.remove('hidden');
-                rememberBlock.classList.add('hidden');
-                authTitle.textContent = 'Configurar Primeiro Acesso';
-                authSubtitle.textContent = 'Defina seu usuário e senha exclusivos (Sem senhas padrão)';
-                submitBtn.innerHTML = '<i class="fa-solid fa-key"></i><span>Criar Acesso e Entrar</span>';
-                return;
-            }
+          if (remember) localStorage.setItem(KEY_SESSION, sessionPayload);
+          else sessionStorage.setItem(KEY_SESSION, sessionPayload);
 
-            tabsContainer.classList.remove('hidden');
-
-            if (mode === 'login') {
-                tabLogin.className = 'flex-1 py-2 text-xs font-bold rounded-lg transition bg-indigo-600 text-white shadow';
-                tabRegister.className = 'flex-1 py-2 text-xs font-bold rounded-lg transition text-slate-400 hover:text-white';
-                confirmBlock.classList.add('hidden');
-                rememberBlock.classList.remove('hidden');
-                authTitle.textContent = 'StreamHub Pro';
-                authSubtitle.textContent = 'Entre com seu usuário e senha para acessar sua grade';
-                submitBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i><span>Entrar no Painel</span>';
-            } else {
-                tabRegister.className = 'flex-1 py-2 text-xs font-bold rounded-lg transition bg-indigo-600 text-white shadow';
-                tabLogin.className = 'flex-1 py-2 text-xs font-bold rounded-lg transition text-slate-400 hover:text-white';
-                confirmBlock.classList.remove('hidden');
-                rememberBlock.classList.add('hidden');
-                authTitle.textContent = 'Criar Novo Acesso';
-                authSubtitle.textContent = 'Cadastre um novo usuário e senha para gerenciar suas lives';
-                submitBtn.innerHTML = '<i class="fa-solid fa-user-plus"></i><span>Cadastrar e Conectar</span>';
-            }
+          document.getElementById('activeUserHeader').textContent = creds.username;
+          document.getElementById('authOverlay').classList.add('hidden');
+          showToastNotification(`Conectado como ${creds.username}`);
+        } else {
+          showAuthAlert('Usuário ou senha incorretos.', 'error');
         }
+      }
+    }
 
-        function showAuthAlert(msg, type = 'error') {
-            const alert = document.getElementById('authAlert');
-            alert.className = `mb-4 p-3 rounded-xl text-xs font-semibold flex items-center gap-2 border ${
-                type === 'error' 
-                    ? 'bg-rose-950/60 text-rose-300 border-rose-800/50' 
-                    : type === 'info'
-                    ? 'bg-indigo-950/60 text-indigo-300 border-indigo-800/50'
-                    : 'bg-emerald-950/60 text-emerald-300 border-emerald-800/50'
-            }`;
-            alert.innerHTML = `
-                <i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : type === 'info' ? 'fa-circle-info' : 'fa-circle-check'}"></i>
-                <span>${escapeHTML(msg)}</span>
-            `;
-            alert.classList.remove('hidden');
+    function showAuthAlert(msg, type = 'error') {
+      const banner = document.getElementById('authAlertBanner');
+      banner.className = `mb-4 p-3 rounded-xl text-xs font-semibold flex items-center gap-2 border ${
+        type === 'error' ? 'bg-rose-950/60 text-rose-300 border-rose-800/40' : 'bg-purple-950/60 text-purple-300 border-purple-800/40'
+      }`;
+      banner.innerHTML = `<i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-info'}"></i> <span>${msg}</span>`;
+      banner.classList.remove('hidden');
+    }
+
+    function togglePassVisibility(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-solid fa-eye-slash text-xs';
+      } else {
+        input.type = 'password';
+        icon.className = 'fa-solid fa-eye text-xs';
+      }
+    }
+
+    function logoutAction() {
+      localStorage.removeItem(KEY_SESSION);
+      sessionStorage.removeItem(KEY_SESSION);
+      document.getElementById('authForm').reset();
+      checkAuthSession();
+      showToastNotification('Você saiu da conta.');
+    }
+
+    async function handleUpdateCredentials(e) {
+      e.preventDefault();
+      const newUser = document.getElementById('credNewUsername').value.trim();
+      const currPass = document.getElementById('credCurrentPassword').value;
+      const newPass = document.getElementById('credNewPassword').value;
+      const alertBox = document.getElementById('credFeedbackAlert');
+
+      const raw = localStorage.getItem(KEY_AUTH);
+      if (!raw) return;
+
+      const creds = JSON.parse(raw);
+      const currHashed = await computeSha256(currPass);
+
+      if (currHashed !== creds.passwordHash) {
+        alertBox.className = 'mb-3 p-2.5 rounded-xl text-xs font-semibold border bg-rose-950/60 text-rose-300 border-rose-800/40';
+        alertBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Senha atual incorreta.';
+        alertBox.classList.remove('hidden');
+        return;
+      }
+
+      if (newPass.length < 4) {
+        alertBox.className = 'mb-3 p-2.5 rounded-xl text-xs font-semibold border bg-rose-950/60 text-rose-300 border-rose-800/40';
+        alertBox.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> A nova senha deve ter no mínimo 4 caracteres.';
+        alertBox.classList.remove('hidden');
+        return;
+      }
+
+      const newHashed = await computeSha256(newPass);
+      localStorage.setItem(KEY_AUTH, JSON.stringify({ username: newUser, passwordHash: newHashed }));
+      document.getElementById('activeUserHeader').textContent = newUser;
+
+      alertBox.className = 'mb-3 p-2.5 rounded-xl text-xs font-semibold border bg-emerald-950/60 text-emerald-300 border-emerald-800/40';
+      alertBox.innerHTML = '<i class="fa-solid fa-circle-check"></i> Credenciais atualizadas com sucesso!';
+      alertBox.classList.remove('hidden');
+
+      setTimeout(() => {
+        closeCredentialsModal();
+      }, 900);
+    }
+
+    function loadLivesState() {
+      const stored = localStorage.getItem(KEY_LIVES);
+      if (stored) {
+        try {
+          lives = JSON.parse(stored);
+        } catch (e) {
+          lives = getInitialMockLives();
         }
-
-        function togglePasswordVisibility(inputId, iconId) {
-            const input = document.getElementById(inputId);
-            const icon = document.getElementById(iconId);
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.className = 'fa-solid fa-eye-slash text-xs';
-            } else {
-                input.type = 'password';
-                icon.className = 'fa-solid fa-eye text-xs';
-            }
-        }
-
-        async function handleAuthSubmit(e) {
-            e.preventDefault();
-            const username = document.getElementById('authUsername').value.trim();
-            const password = document.getElementById('authPassword').value;
-
-            if (!username || !password) {
-                showAuthAlert('Preencha todos os campos obrigatórios.');
-                return;
-            }
-
-            if (authCurrentMode === 'register') {
-                const confirm = document.getElementById('authPasswordConfirm').value;
-                if (password !== confirm) {
-                    showAuthAlert('As senhas não conferem. Digite novamente.');
-                    return;
-                }
-                if (password.length < 4) {
-                    showAuthAlert('A senha deve ter pelo menos 4 caracteres.');
-                    return;
-                }
-
-                const hash = await sha256(password);
-                const creds = { username, passwordHash: hash };
-                localStorage.setItem(STORAGE_KEY_CREDS, JSON.stringify(creds));
-
-                // Log in immediately on account creation
-                const session = JSON.stringify({ user: username, at: Date.now() });
-                localStorage.setItem(STORAGE_KEY_SESSION, session);
-
-                showAuthAlert('Acesso configurado com sucesso!', 'success');
-                setTimeout(() => {
-                    checkAuthentication();
-                    showToast(`Bem-vindo, ${username}!`);
-                }, 600);
-            } else {
-                const raw = localStorage.getItem(STORAGE_KEY_CREDS);
-                if (!raw) {
-                    showAuthAlert('Nenhuma credencial configurada. Crie seu acesso primeiro.');
-                    return;
-                }
-
-                const creds = JSON.parse(raw);
-                const hash = await sha256(password);
-
-                if (username.toLowerCase() === creds.username.toLowerCase() && hash === creds.passwordHash) {
-                    const remember = document.getElementById('authRememberMe').checked;
-                    const session = JSON.stringify({ user: creds.username, at: Date.now() });
-
-                    if (remember) {
-                        localStorage.setItem(STORAGE_KEY_SESSION, session);
-                    } else {
-                        sessionStorage.setItem(STORAGE_KEY_SESSION, session);
-                    }
-
-                    showAuthAlert('Acesso autorizado! Entrando...', 'success');
-                    setTimeout(() => {
-                        checkAuthentication();
-                        showToast(`Conectado como ${creds.username}`);
-                    }, 500);
-                } else {
-                    showAuthAlert('Usuário ou senha incorretos.');
-                }
-            }
-        }
-
-        function logoutAction() {
-            localStorage.removeItem(STORAGE_KEY_SESSION);
-            sessionStorage.removeItem(STORAGE_KEY_SESSION);
-            document.getElementById('authForm').reset();
-            checkAuthentication();
-            showToast('Você saiu da sua conta.');
-        }
-
-        async function handleChangeCredsSubmit(e) {
-            e.preventDefault();
-            const newUsername = document.getElementById('newUsername').value.trim();
-            const currentPass = document.getElementById('currentPassword').value;
-            const newPass = document.getElementById('newPassword').value;
-
-            const raw = localStorage.getItem(STORAGE_KEY_CREDS);
-            if (!raw) return;
-
-            const creds = JSON.parse(raw);
-            const currentHash = await sha256(currentPass);
-
-            if (currentHash !== creds.passwordHash) {
-                showToast('A senha atual está incorreta!', 'error');
-                return;
-            }
-
-            if (newPass.length < 4) {
-                showToast('A nova senha deve ter no mínimo 4 caracteres.', 'error');
-                return;
-            }
-
-            const newHash = await sha256(newPass);
-            const updated = { username: newUsername, passwordHash: newHash };
-            localStorage.setItem(STORAGE_KEY_CREDS, JSON.stringify(updated));
-
-            // Refresh session username
-            const session = JSON.stringify({ user: newUsername, at: Date.now() });
-            if (localStorage.getItem(STORAGE_KEY_SESSION)) {
-                localStorage.setItem(STORAGE_KEY_SESSION, session);
-            } else {
-                sessionStorage.setItem(STORAGE_KEY_SESSION, session);
-            }
-
-            document.getElementById('loggedUserDisplay').textContent = newUsername;
-            document.getElementById('accountModal').classList.add('hidden');
-            document.getElementById('changeCredsForm').reset();
-            showToast('Credenciais atualizadas com sucesso!');
-        }
-
-        // Communities & Platform Configurations
-        const COMMUNITY_COLORS = {
-            'Legacy': { bg: 'bg-amber-500/15', text: 'text-amber-400', border: 'border-amber-500/30' },
-            'TGT': { bg: 'bg-blue-500/15', text: 'text-blue-400', border: 'border-blue-500/30' },
-            'Evolution': { bg: 'bg-emerald-500/15', text: 'text-emerald-400', border: 'border-emerald-500/30' },
-            'Godys': { bg: 'bg-purple-500/15', text: 'text-purple-400', border: 'border-purple-500/30' },
-            'Enigma': { bg: 'bg-rose-500/15', text: 'text-rose-400', border: 'border-rose-500/30' },
-            'SkyVolk': { bg: 'bg-cyan-500/15', text: 'text-cyan-400', border: 'border-cyan-500/30' },
-            'default': { bg: 'bg-indigo-500/15', text: 'text-indigo-400', border: 'border-indigo-500/30' }
-        };
-
-        const DEFAULT_COMMUNITIES = ['Legacy', 'TGT', 'Evolution', 'Godys', 'Enigma', 'SkyVolk'];
-        let activeCommunitiesCatalog = [...DEFAULT_COMMUNITIES];
-        let modalSelectedCommunities = new Set(['Legacy']);
-
-        const PLATFORM_CONFIG = {
-            'Twitch': {
-                icon: 'fa-brands fa-twitch',
-                color: 'text-[#9146FF]',
-                badgeBg: 'bg-[#9146FF]/15',
-                badgeBorder: 'border-[#9146FF]/35',
-                activeRing: 'ring-[#9146FF]'
-            },
-            'YouTube': {
-                icon: 'fa-brands fa-youtube',
-                color: 'text-[#FF0000]',
-                badgeBg: 'bg-[#FF0000]/15',
-                badgeBorder: 'border-[#FF0000]/35',
-                activeRing: 'ring-[#FF0000]'
-            },
-            'Kick': {
-                icon: 'fa-solid fa-bolt',
-                color: 'text-[#53FC18]',
-                badgeBg: 'bg-[#53FC18]/15',
-                badgeBorder: 'border-[#53FC18]/35',
-                activeRing: 'ring-[#53FC18]'
-            },
-            'TikTok': {
-                icon: 'fa-brands fa-tiktok',
-                color: 'text-[#FE2C55]',
-                badgeBg: 'bg-[#FE2C55]/15',
-                badgeBorder: 'border-[#FE2C55]/35',
-                activeRing: 'ring-[#FE2C55]'
-            },
-            'Bilibili': {
-                icon: 'fa-brands fa-bilibili',
-                color: 'text-[#00AEEC]',
-                badgeBg: 'bg-[#00AEEC]/15',
-                badgeBorder: 'border-[#00AEEC]/35',
-                activeRing: 'ring-[#00AEEC]'
-            }
-        };
-
-        const AVAILABLE_PLATFORMS = ['Twitch', 'YouTube', 'Kick', 'TikTok', 'Bilibili'];
-        let modalSelectedPlatforms = new Set(['Twitch']);
-
-        const DAYS_ORDER = [
-            'Segunda-feira',
-            'Terça-feira',
-            'Quarta-feira',
-            'Quinta-feira',
-            'Sexta-feira',
-            'Sábado',
-            'Domingo'
-        ];
-
-        const DEFAULT_THEME = {
-            appBg: '#090d16',
-            appCard: '#121927',
-            appText: '#e2e8f0',
-            appHighlight: '#38bdf8',
-            appAccent: '#6366f1'
-        };
-
-        // Lives State
-        let lives = [];
-        let currentGroupBy = 'day';
-        let currentPlatformFilter = 'all';
-        let searchQuery = '';
-
-        function getInitialSampleData() {
-            return [
-                {
-                    id: 'live_1',
-                    title: 'Mega Colab: Torneio Inter-Comunidades',
-                    communities: ['Legacy', 'TGT', 'Evolution'],
-                    platforms: ['Twitch', 'YouTube'],
-                    day: 'Segunda-feira',
-                    startTime: '19:30',
-                    endTime: '22:30',
-                    url: 'https://twitch.tv',
-                    notes: 'Transmissão com drops ativados e chat integrado.'
-                },
-                {
-                    id: 'live_2',
-                    title: 'Sextou Multiplataforma & Duelos',
-                    communities: ['SkyVolk', 'Godys'],
-                    platforms: ['Kick', 'TikTok'],
-                    day: 'Sexta-feira',
-                    startTime: '20:00',
-                    endTime: '23:30',
-                    url: 'https://tiktok.com',
-                    notes: 'Jogando com os inscritos no TikTok Live e Kick.'
-                },
-                {
-                    id: 'live_3',
-                    title: 'Operação Enigma: Lore & Speedrun',
-                    communities: ['Enigma'],
-                    platforms: ['Twitch', 'Bilibili'],
-                    day: 'Sábado',
-                    startTime: '22:00',
-                    endTime: '02:00',
-                    url: 'https://bilibili.com',
-                    notes: 'Simulcast oficial para comunidades internacional e brasileira.'
-                },
-                {
-                    id: 'live_4',
-                    title: 'Boss Noturno & Farm de Equipamentos',
-                    communities: ['Evolution', 'Legacy'],
-                    platforms: ['YouTube', 'Kick', 'TikTok'],
-                    day: 'Quarta-feira',
-                    startTime: '20:30',
-                    endTime: '23:00',
-                    url: 'https://kick.com',
-                    notes: 'Transmissão simultânea tripla com sorteios.'
-                }
-            ];
-        }
-
-        function loadTheme() {
-            try {
-                const saved = localStorage.getItem(STORAGE_KEY_THEME);
-                const theme = saved ? JSON.parse(saved) : DEFAULT_THEME;
-                applyTheme(theme);
-            } catch (e) {
-                applyTheme(DEFAULT_THEME);
-            }
-        }
-
-        function applyTheme(theme) {
-            const root = document.documentElement;
-            root.style.setProperty('--app-bg', theme.appBg);
-            root.style.setProperty('--app-card', theme.appCard);
-            root.style.setProperty('--app-text', theme.appText);
-            root.style.setProperty('--app-highlight', theme.appHighlight);
-            root.style.setProperty('--app-accent', theme.appAccent);
-
-            document.getElementById('pickerBg').value = theme.appBg;
-            document.getElementById('pickerCard').value = theme.appCard;
-            document.getElementById('pickerText').value = theme.appText;
-            document.getElementById('pickerHighlight').value = theme.appHighlight;
-            document.getElementById('pickerAccent').value = theme.appAccent;
-        }
-
-        function saveTheme() {
-            const theme = {
-                appBg: document.getElementById('pickerBg').value,
-                appCard: document.getElementById('pickerCard').value,
-                appText: document.getElementById('pickerText').value,
-                appHighlight: document.getElementById('pickerHighlight').value,
-                appAccent: document.getElementById('pickerAccent').value
-            };
-            localStorage.setItem(STORAGE_KEY_THEME, JSON.stringify(theme));
-            applyTheme(theme);
-            showToast('Tema salvo com sucesso!');
-            document.getElementById('colorModal').classList.add('hidden');
-        }
-
-        function resetTheme() {
-            localStorage.removeItem(STORAGE_KEY_THEME);
-            applyTheme(DEFAULT_THEME);
-            showToast('Cores padrão restauradas!');
-        }
-
-        function normalizeLiveItem(item) {
-            let commList = [];
-            if (Array.isArray(item.communities)) commList = item.communities;
-            else if (item.community) commList = [item.community];
-            else commList = ['Legacy'];
-
-            let platList = [];
-            if (Array.isArray(item.platforms)) platList = item.platforms;
-            else if (item.platform) platList = [item.platform];
-            else platList = ['Twitch'];
-
-            return {
-                ...item,
-                communities: commList,
-                platforms: platList
-            };
-        }
-
-        function loadLives() {
-            try {
-                const data = localStorage.getItem(STORAGE_KEY_LIVES);
-                if (data) {
-                    const parsed = JSON.parse(data);
-                    lives = parsed.map(normalizeLiveItem);
-                } else {
-                    lives = getInitialSampleData();
-                    saveLivesToStorage();
-                }
-
-                lives.forEach(item => {
-                    item.communities?.forEach(c => {
-                        if (!activeCommunitiesCatalog.includes(c)) activeCommunitiesCatalog.push(c);
-                    });
-                });
-            } catch (e) {
-                lives = getInitialSampleData();
-            }
-        }
-
-        function saveLivesToStorage() {
-            localStorage.setItem(STORAGE_KEY_LIVES, JSON.stringify(lives));
-            updateStats();
-        }
-
-        function renderPlatformSelectorChips() {
-            const container = document.getElementById('platformSelectorList');
-            container.innerHTML = '';
-
-            AVAILABLE_PLATFORMS.forEach(plat => {
-                const isSelected = modalSelectedPlatforms.has(plat);
-                const conf = PLATFORM_CONFIG[plat] || PLATFORM_CONFIG['Twitch'];
-
-                const chip = document.createElement('button');
-                chip.type = 'button';
-                chip.className = `px-3.5 py-1.5 rounded-xl text-xs font-bold border transition flex items-center gap-2 cursor-pointer select-none ${
-                    isSelected 
-                        ? `${conf.badgeBg} ${conf.color} ${conf.badgeBorder} ring-2 ${conf.activeRing} shadow-md scale-100` 
-                        : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
-                }`;
-
-                chip.innerHTML = `
-                    <i class="${conf.icon}"></i>
-                    <span>${escapeHTML(plat)}</span>
-                    <i class="fa-solid ${isSelected ? 'fa-check text-[10px]' : 'fa-plus text-[10px] opacity-30'}"></i>
-                `;
-
-                chip.addEventListener('click', () => {
-                    if (modalSelectedPlatforms.has(plat)) {
-                        if (modalSelectedPlatforms.size > 1) {
-                            modalSelectedPlatforms.delete(plat);
-                        } else {
-                            showToast('A live deve ter pelo menos uma plataforma selecionada.', 'error');
-                            return;
-                        }
-                    } else {
-                        modalSelectedPlatforms.add(plat);
-                    }
-                    document.getElementById('platformError').classList.add('hidden');
-                    renderPlatformSelectorChips();
-                });
-
-                container.appendChild(chip);
-            });
-        }
-
-        function renderCommunitySelectorChips() {
-            const container = document.getElementById('communitySelectorList');
-            container.innerHTML = '';
-
-            activeCommunitiesCatalog.forEach(name => {
-                const isSelected = modalSelectedCommunities.has(name);
-                const colorInfo = COMMUNITY_COLORS[name] || COMMUNITY_COLORS['default'];
-                
-                const chip = document.createElement('button');
-                chip.type = 'button';
-                chip.className = `px-3 py-1 rounded-lg text-xs font-semibold border transition flex items-center gap-1.5 cursor-pointer select-none ${
-                    isSelected 
-                        ? `${colorInfo.bg} ${colorInfo.text} ${colorInfo.border} ring-1 ring-indigo-400 shadow-sm scale-100` 
-                        : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
-                }`;
-                chip.innerHTML = `
-                    <i class="fa-solid ${isSelected ? 'fa-check text-[10px]' : 'fa-plus text-[10px] opacity-40'}"></i>
-                    <span>${escapeHTML(name)}</span>
-                `;
-
-                chip.addEventListener('click', () => {
-                    if (modalSelectedCommunities.has(name)) {
-                        if (modalSelectedCommunities.size > 1) {
-                            modalSelectedCommunities.delete(name);
-                        } else {
-                            showToast('A live deve pertencer a pelo menos uma comunidade.', 'error');
-                            return;
-                        }
-                    } else {
-                        modalSelectedCommunities.add(name);
-                    }
-                    document.getElementById('communityError').classList.add('hidden');
-                    renderCommunitySelectorChips();
-                });
-
-                container.appendChild(chip);
-            });
-        }
-
-        function getFilteredLives() {
-            return lives.filter(live => {
-                const livePlats = live.platforms || [live.platform || 'Twitch'];
-                if (currentPlatformFilter !== 'all' && !livePlats.includes(currentPlatformFilter)) {
-                    return false;
-                }
-                if (searchQuery) {
-                    const commStr = (live.communities || []).join(' ');
-                    const platStr = livePlats.join(' ');
-                    const pool = `${live.title} ${commStr} ${platStr} ${live.notes || ''} ${live.day}`.toLowerCase();
-                    if (!pool.includes(searchQuery)) return false;
-                }
-                return true;
-            });
-        }
-
-        function groupLives(filtered) {
-            const grouped = {};
-
-            if (currentGroupBy === 'day') {
-                DAYS_ORDER.forEach(day => { grouped[day] = []; });
-                filtered.forEach(item => {
-                    if (!grouped[item.day]) grouped[item.day] = [];
-                    grouped[item.day].push(item);
-                });
-            } else if (currentGroupBy === 'community') {
-                activeCommunitiesCatalog.forEach(c => { grouped[c] = []; });
-                filtered.forEach(item => {
-                    const comms = item.communities && item.communities.length > 0 ? item.communities : ['Outros'];
-                    comms.forEach(c => {
-                        if (!grouped[c]) grouped[c] = [];
-                        if (!grouped[c].some(x => x.id === item.id)) grouped[c].push(item);
-                    });
-                });
-            } else if (currentGroupBy === 'platform') {
-                AVAILABLE_PLATFORMS.forEach(p => { grouped[p] = []; });
-                filtered.forEach(item => {
-                    const plats = item.platforms && item.platforms.length > 0 ? item.platforms : [item.platform || 'Twitch'];
-                    plats.forEach(p => {
-                        if (!grouped[p]) grouped[p] = [];
-                        if (!grouped[p].some(x => x.id === item.id)) grouped[p].push(item);
-                    });
-                });
-            }
-
-            return grouped;
-        }
-
-        function renderSchedule() {
-            const container = document.getElementById('scheduleContainer');
-            const emptyState = document.getElementById('emptyState');
-            const filtered = getFilteredLives();
-
-            updateStats();
-
-            if (filtered.length === 0) {
-                container.innerHTML = '';
-                emptyState.classList.remove('hidden');
-                return;
-            } else {
-                emptyState.classList.add('hidden');
-            }
-
-            const grouped = groupLives(filtered);
-            container.innerHTML = '';
-
-            Object.entries(grouped).forEach(([groupName, items]) => {
-                if (items.length === 0 && currentGroupBy !== 'day') return;
-
-                items.sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''));
-
-                const section = document.createElement('div');
-                section.className = 'space-y-3';
-
-                let iconClass = 'fa-calendar-day';
-                if (currentGroupBy === 'community') iconClass = 'fa-shield-halved';
-                if (currentGroupBy === 'platform') {
-                    if (groupName === 'TikTok') iconClass = 'fa-brands fa-tiktok';
-                    else if (groupName === 'Bilibili') iconClass = 'fa-brands fa-bilibili';
-                    else if (groupName === 'Twitch') iconClass = 'fa-brands fa-twitch';
-                    else if (groupName === 'YouTube') iconClass = 'fa-brands fa-youtube';
-                    else if (groupName === 'Kick') iconClass = 'fa-solid fa-bolt';
-                    else iconClass = 'fa-tower-broadcast';
-                }
-
-                section.innerHTML = `
-                    <div class="flex items-center justify-between border-b border-white/10 pb-2">
-                        <div class="flex items-center gap-2.5">
-                            <i class="${iconClass.includes('fa-brands') ? iconClass : `fa-solid ${iconClass}`} custom-highlight text-sm"></i>
-                            <h3 class="heading-font font-bold text-lg tracking-wide uppercase">${escapeHTML(groupName)}</h3>
-                            <span class="text-xs px-2.5 py-0.5 rounded-full bg-white/10 font-bold opacity-75">${items.length} ${items.length === 1 ? 'live' : 'lives'}</span>
-                        </div>
-                    </div>
-                `;
-
-                if (items.length === 0) {
-                    const emptyCard = document.createElement('div');
-                    emptyCard.className = 'p-5 rounded-2xl custom-card border border-white/5 text-center text-xs opacity-40 font-medium';
-                    emptyCard.textContent = 'Nenhuma transmissão agendada para este bloco.';
-                    section.appendChild(emptyCard);
-                } else {
-                    const cardsGrid = document.createElement('div');
-                    cardsGrid.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4';
-
-                    items.forEach(live => {
-                        cardsGrid.appendChild(createLiveCard(live));
-                    });
-                    section.appendChild(cardsGrid);
-                }
-
-                container.appendChild(section);
-            });
-        }
-
-        function createLiveCard(live) {
-            const card = document.createElement('div');
-            card.className = 'custom-card rounded-2xl p-4 flex flex-col justify-between transition duration-200 hover:border-indigo-500/50 hover:shadow-xl group relative';
-
-            const commList = Array.isArray(live.communities) && live.communities.length > 0 ? live.communities : [live.community || 'Geral'];
-            const platList = Array.isArray(live.platforms) && live.platforms.length > 0 ? live.platforms : [live.platform || 'Twitch'];
-            const timeString = live.endTime ? `${live.startTime} - ${live.endTime}` : `${live.startTime} em diante`;
-
-            // Community Badges
-            const communityBadgesHtml = commList.map(commName => {
-                const commStyle = COMMUNITY_COLORS[commName] || COMMUNITY_COLORS['default'];
-                return `
-                    <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-md border ${commStyle.bg} ${commStyle.text} ${commStyle.border} shadow-sm">
-                        <i class="fa-solid fa-users text-[9px] opacity-80"></i>
-                        <span>${escapeHTML(commName)}</span>
-                    </span>
-                `;
-            }).join('');
-
-            // Platform Badges (Twitch, YouTube, Kick, TikTok, Bilibili)
-            const platformBadgesHtml = platList.map(platName => {
-                const platStyle = PLATFORM_CONFIG[platName] || PLATFORM_CONFIG['Twitch'];
-                return `
-                    <span class="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-lg border ${platStyle.badgeBg} ${platStyle.color} ${platStyle.badgeBorder} shadow-sm">
-                        <i class="${platStyle.icon} text-xs"></i>
-                        <span>${escapeHTML(platName)}</span>
-                    </span>
-                `;
-            }).join('');
-
-            card.innerHTML = `
-                <div class="space-y-3">
-                    <!-- Top Info: Day, Time & Actions -->
-                    <div class="flex items-center justify-between pb-2.5 border-b border-white/5">
-                        <div class="flex items-center gap-2 text-xs font-semibold">
-                            <span class="px-2 py-0.5 rounded-md bg-white/10 text-white flex items-center gap-1">
-                                <i class="fa-regular fa-calendar text-[11px] opacity-70"></i>
-                                ${escapeHTML(live.day)}
-                            </span>
-                            <span class="custom-highlight flex items-center gap-1 font-bold">
-                                <i class="fa-regular fa-clock text-[11px]"></i>
-                                ${escapeHTML(timeString)}
-                            </span>
-                        </div>
-
-                        <div class="flex items-center gap-1 opacity-80 group-hover:opacity-100 no-print flex-shrink-0">
-                            <button onclick="editLive('${live.id}')" class="w-7 h-7 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-xs text-gray-300 hover:text-white transition" title="Editar">
-                                <i class="fa-solid fa-pen"></i>
-                            </button>
-                            <button onclick="deleteLive('${live.id}')" class="w-7 h-7 rounded-lg bg-white/5 hover:bg-rose-500/20 flex items-center justify-center text-xs text-gray-300 hover:text-rose-400 transition" title="Excluir">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Title -->
-                    <h4 class="font-bold text-base leading-snug tracking-tight group-hover:text-white transition">
-                        ${escapeHTML(live.title)}
-                    </h4>
-
-                    <!-- Nítida Separação: Onde Assistir (Plataformas) vs Comunidades Participantes -->
-                    <div class="space-y-2.5 bg-black/25 p-3 rounded-xl border border-white/5">
-                        <!-- Plataformas -->
-                        <div>
-                            <div class="flex items-center gap-1.5 mb-1.5">
-                                <i class="fa-solid fa-satellite-dish text-[10px] text-indigo-400"></i>
-                                <span class="text-[10px] font-black uppercase tracking-wider text-indigo-300/80">Onde Assistir (Plataformas):</span>
-                            </div>
-                            <div class="flex flex-wrap items-center gap-1.5">
-                                ${platformBadgesHtml}
-                            </div>
-                        </div>
-
-                        <div class="border-t border-white/5"></div>
-
-                        <!-- Comunidades -->
-                        <div>
-                            <div class="flex items-center gap-1.5 mb-1.5">
-                                <i class="fa-solid fa-shield-halved text-[10px] text-pink-400"></i>
-                                <span class="text-[10px] font-black uppercase tracking-wider text-pink-300/80">Comunidades Participantes:</span>
-                            </div>
-                            <div class="flex flex-wrap items-center gap-1.5">
-                                ${communityBadgesHtml}
-                            </div>
-                        </div>
-                    </div>
-
-                    ${live.notes ? `
-                        <p class="text-xs opacity-70 line-clamp-2 bg-white/5 p-2 rounded-lg border border-white/5 italic">
-                            <i class="fa-solid fa-quote-left mr-1 opacity-40 text-[10px]"></i>${escapeHTML(live.notes)}
-                        </p>
-                    ` : ''}
-                </div>
-
-                <!-- Footer Link -->
-                <div class="pt-3 mt-3 border-t border-white/5 flex items-center justify-between">
-                    ${live.url ? `
-                        <a href="${escapeHTML(live.url)}" target="_blank" rel="noopener noreferrer" class="text-xs font-semibold flex items-center gap-1.5 custom-highlight hover:underline">
-                            <span>Acessar Transmissão</span>
-                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                        </a>
-                    ` : `
-                        <span class="text-[11px] opacity-40 italic">Sem link configurado</span>
-                    `}
-                    <span class="text-[10px] uppercase font-bold tracking-wider opacity-40">Confirmado</span>
-                </div>
-            `;
-
-            return card;
-        }
-
-        function updateStats() {
-            document.getElementById('statTotalLives').textContent = lives.length;
-
-            const uniqueCommunities = new Set();
-            lives.forEach(l => {
-                (l.communities || []).forEach(c => uniqueCommunities.add(c));
-            });
-            document.getElementById('statTotalCommunities').textContent = uniqueCommunities.size || 0;
-
-            const getPlatformCount = (plat) => {
-                return lives.filter(l => {
-                    const plats = l.platforms || [l.platform || 'Twitch'];
-                    return plats.includes(plat);
-                }).length;
-            };
-
-            document.getElementById('statTwitch').textContent = getPlatformCount('Twitch');
-            document.getElementById('statYouTube').textContent = getPlatformCount('YouTube');
-            document.getElementById('statKick').textContent = getPlatformCount('Kick');
-            document.getElementById('statTikTok').textContent = getPlatformCount('TikTok');
-            document.getElementById('statBilibili').textContent = getPlatformCount('Bilibili');
-        }
-
-        function editLive(id) {
-            const item = lives.find(l => l.id === id);
-            if (!item) return;
-
-            document.getElementById('liveId').value = item.id;
-            document.getElementById('liveTitle').value = item.title;
-            
-            const commList = Array.isArray(item.communities) ? item.communities : [item.community || 'Legacy'];
-            commList.forEach(c => {
-                if (!activeCommunitiesCatalog.includes(c)) activeCommunitiesCatalog.push(c);
-            });
-            modalSelectedCommunities = new Set(commList);
-            renderCommunitySelectorChips();
-
-            const platList = Array.isArray(item.platforms) ? item.platforms : [item.platform || 'Twitch'];
-            modalSelectedPlatforms = new Set(platList);
-            renderPlatformSelectorChips();
-
-            document.getElementById('liveDay').value = item.day;
-            document.getElementById('liveStartTime').value = item.startTime;
-            document.getElementById('liveEndTime').value = item.endTime || '';
-            document.getElementById('liveUrl').value = item.url || '';
-            document.getElementById('liveNotes').value = item.notes || '';
-
-            document.getElementById('modalTitle').textContent = 'Editar Transmissão';
-            document.getElementById('liveModal').classList.remove('hidden');
-        }
-
-        function deleteLive(id) {
-            if (window.confirm("Deseja realmente remover esta transmissão da sua agenda?")) {
-                lives = lives.filter(l => l.id !== id);
-                saveLivesToStorage();
-                renderSchedule();
-                showToast('Transmissão removida.');
-            }
-        }
-
-        function resetLiveForm() {
-            document.getElementById('liveForm').reset();
-            document.getElementById('liveId').value = '';
-            document.getElementById('communityError').classList.add('hidden');
-            document.getElementById('platformError').classList.add('hidden');
-            modalSelectedCommunities = new Set(['Legacy']);
-            modalSelectedPlatforms = new Set(['Twitch']);
-            renderCommunitySelectorChips();
-            renderPlatformSelectorChips();
-        }
-
-        function handleLiveFormSubmit(e) {
-            e.preventDefault();
-            let hasError = false;
-
-            if (modalSelectedCommunities.size === 0) {
-                document.getElementById('communityError').classList.remove('hidden');
-                hasError = true;
-            }
-            if (modalSelectedPlatforms.size === 0) {
-                document.getElementById('platformError').classList.remove('hidden');
-                hasError = true;
-            }
-            if (hasError) return;
-
-            const id = document.getElementById('liveId').value || 'live_' + Date.now();
-            const liveObj = {
-                id,
-                title: document.getElementById('liveTitle').value.trim(),
-                communities: Array.from(modalSelectedCommunities),
-                platforms: Array.from(modalSelectedPlatforms),
-                day: document.getElementById('liveDay').value,
-                startTime: document.getElementById('liveStartTime').value,
-                endTime: document.getElementById('liveEndTime').value,
-                url: document.getElementById('liveUrl').value.trim(),
-                notes: document.getElementById('liveNotes').value.trim()
-            };
-
-            const idx = lives.findIndex(l => l.id === id);
-            if (idx >= 0) {
-                lives[idx] = liveObj;
-                showToast('Transmissão atualizada!');
-            } else {
-                lives.push(liveObj);
-                showToast('Nova transmissão adicionada à grade!');
-            }
-
-            saveLivesToStorage();
-            renderSchedule();
-            document.getElementById('liveModal').classList.add('hidden');
-            resetLiveForm();
-        }
-
-        function exportJsonData() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(lives, null, 2));
-            const a = document.createElement('a');
-            a.setAttribute("href", dataStr);
-            a.setAttribute("download", `streamhub_backup_${new Date().toISOString().slice(0, 10)}.json`);
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            showToast('Backup exportado com sucesso!');
-        }
-
-        function importJsonData(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                try {
-                    const parsed = JSON.parse(event.target.result);
-                    if (Array.isArray(parsed)) {
-                        lives = parsed.map(normalizeLiveItem);
-                        lives.forEach(item => {
-                            item.communities?.forEach(c => {
-                                if (!activeCommunitiesCatalog.includes(c)) activeCommunitiesCatalog.push(c);
-                            });
-                        });
-                        saveLivesToStorage();
-                        renderCommunitySelectorChips();
-                        renderPlatformSelectorChips();
-                        renderSchedule();
-                        showToast('Backup importado com sucesso!');
-                        document.getElementById('dataModal').classList.add('hidden');
-                    } else {
-                        showToast('Erro: Arquivo JSON não contém uma lista válida.', 'error');
-                    }
-                } catch (err) {
-                    showToast('Erro ao ler arquivo JSON.', 'error');
-                }
-            };
-            reader.readAsText(file);
-            e.target.value = '';
-        }
-
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            const toastMsg = document.getElementById('toastMsg');
-            const toastIcon = document.getElementById('toastIcon');
-
-            toastMsg.textContent = message;
-            if (type === 'error') {
-                toastIcon.className = 'fa-solid fa-circle-exclamation text-rose-500';
-            } else {
-                toastIcon.className = 'fa-solid fa-circle-check text-emerald-400';
-            }
-
-            toast.classList.remove('translate-y-20', 'opacity-0');
-            toast.classList.add('translate-y-0', 'opacity-100');
-
-            setTimeout(() => {
-                toast.classList.add('translate-y-20', 'opacity-0');
-                toast.classList.remove('translate-y-0', 'opacity-100');
-            }, 3200);
-        }
-
-        function escapeHTML(str) {
-            if (!str) return '';
-            return str
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
-        function setupEventListeners() {
-            // Modals
-            const colorModal = document.getElementById('colorModal');
-            document.getElementById('btnOpenColors').addEventListener('click', () => colorModal.classList.remove('hidden'));
-            document.getElementById('btnCloseColorModal').addEventListener('click', () => colorModal.classList.add('hidden'));
-            document.getElementById('btnApplyColors').addEventListener('click', saveTheme);
-            document.getElementById('btnResetColors').addEventListener('click', resetTheme);
-
-            const accountModal = document.getElementById('accountModal');
-            document.getElementById('btnOpenAccountModal').addEventListener('click', () => {
-                const creds = JSON.parse(localStorage.getItem(STORAGE_KEY_CREDS) || '{}');
-                document.getElementById('newUsername').value = creds.username || '';
-                accountModal.classList.remove('hidden');
-            });
-            document.getElementById('btnCloseAccountModal').addEventListener('click', () => accountModal.classList.add('hidden'));
-            document.getElementById('btnCancelAccountModal').addEventListener('click', () => accountModal.classList.add('hidden'));
-
-            const dataModal = document.getElementById('dataModal');
-            document.getElementById('btnOpenData').addEventListener('click', () => dataModal.classList.remove('hidden'));
-            document.getElementById('btnCloseDataModal').addEventListener('click', () => dataModal.classList.add('hidden'));
-            document.getElementById('btnDoneData').addEventListener('click', () => dataModal.classList.add('hidden'));
-
-            // Live modal
-            const liveModal = document.getElementById('liveModal');
-            const openCreate = () => {
-                resetLiveForm();
-                document.getElementById('modalTitle').textContent = 'Agendar Transmissão';
-                liveModal.classList.remove('hidden');
-            };
-            document.getElementById('btnOpenCreateModal').addEventListener('click', openCreate);
-            document.getElementById('btnEmptyCreate').addEventListener('click', openCreate);
-            document.getElementById('btnCloseLiveModal').addEventListener('click', () => liveModal.classList.add('hidden'));
-            document.getElementById('btnCancelModal').addEventListener('click', () => liveModal.classList.add('hidden'));
-
-            // Add Custom Community
-            const addCustomBtn = document.getElementById('btnAddCustomCommunity');
-            const customInput = document.getElementById('customCommunityInput');
-            const addCustomAction = () => {
-                const val = customInput.value.trim();
-                if (!val) return;
-                if (!activeCommunitiesCatalog.includes(val)) activeCommunitiesCatalog.push(val);
-                modalSelectedCommunities.add(val);
-                customInput.value = '';
-                document.getElementById('communityError').classList.add('hidden');
-                renderCommunitySelectorChips();
-            };
-            addCustomBtn.addEventListener('click', addCustomAction);
-            customInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    addCustomAction();
-                }
-            });
-
-            // Live Form submit
-            document.getElementById('liveForm').addEventListener('submit', handleLiveFormSubmit);
-
-            // Grouping Buttons
-            document.querySelectorAll('.group-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.group-btn').forEach(b => {
-                        b.classList.remove('bg-indigo-600', 'text-white');
-                        b.classList.add('opacity-70');
-                    });
-                    btn.classList.add('bg-indigo-600', 'text-white');
-                    btn.classList.remove('opacity-70');
-                    currentGroupBy = btn.dataset.group;
-                    renderSchedule();
-                });
-            });
-
-            // Platform Filter Buttons
-            document.querySelectorAll('.filter-platform').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('.filter-platform').forEach(b => {
-                        b.classList.remove('border-indigo-500', 'bg-indigo-500/20');
-                    });
-                    btn.classList.add('border-indigo-500', 'bg-indigo-500/20');
-                    currentPlatformFilter = btn.dataset.plat;
-                    renderSchedule();
-                });
-            });
-
-            // Search query
-            document.getElementById('searchInput').addEventListener('input', (e) => {
-                searchQuery = e.target.value.toLowerCase().trim();
-                renderSchedule();
-            });
-
-            // Backup Handlers
-            document.getElementById('btnExportJson').addEventListener('click', exportJsonData);
-            document.getElementById('fileImportJson').addEventListener('change', importJsonData);
-            document.getElementById('btnLoadExamples').addEventListener('click', () => {
-                lives = getInitialSampleData();
-                activeCommunitiesCatalog = [...DEFAULT_COMMUNITIES];
-                saveLivesToStorage();
-                renderCommunitySelectorChips();
-                renderPlatformSelectorChips();
-                renderSchedule();
-                document.getElementById('dataModal').classList.add('hidden');
-                showToast('Grade exemplo carregada com sucesso!');
-            });
-        }
-
-        // App Initialization
-        window.addEventListener('DOMContentLoaded', () => {
-            loadTheme();
-            loadLives();
-            renderCommunitySelectorChips();
-            renderPlatformSelectorChips();
-            setupEventListeners();
-            renderSchedule();
-            checkAuthentication();
+      } else {
+        lives = getInitialMockLives();
+        saveLivesState();
+      }
+
+      // Catalogar comunidades existentes
+      lives.forEach(item => {
+        (item.communities || []).forEach(c => {
+          if (!communitiesCatalog.includes(c)) communitiesCatalog.push(c);
         });
-    </script>
+      });
+    }
+
+    function saveLivesState() {
+      localStorage.setItem(KEY_LIVES, JSON.stringify(lives));
+      renderAllComponents();
+    }
+
+    function getInitialMockLives() {
+      return [
+        {
+          id: 'live_1',
+          title: 'Torneio Inter-Comunidades (Drops Ativados)',
+          day: 'Sexta-feira',
+          startTime: '20:00',
+          endTime: '23:30',
+          platforms: ['Twitch', 'YouTube'],
+          communities: ['Legacy', 'TGT', 'Evolution'],
+          url: 'https://twitch.tv',
+          notes: 'Multistreaming oficial com chat unificado e drops liberados.'
+        },
+        {
+          id: 'live_2',
+          title: 'Sextou Duelos & Gameplay com Inscritos',
+          day: 'Sexta-feira',
+          startTime: '17:00',
+          endTime: '19:30',
+          platforms: ['Kick', 'TikTok'],
+          communities: ['SkyVolk', 'Godys'],
+          url: 'https://tiktok.com',
+          notes: 'Transmissão simultânea rápida interagindo com o chat do TikTok.'
+        },
+        {
+          id: 'live_3',
+          title: 'Operação Enigma: Lore, Speedrun & Boss Noturno',
+          day: 'Sábado',
+          startTime: '22:00',
+          endTime: '01:30',
+          platforms: ['Twitch', 'Bilibili'],
+          communities: ['Enigma'],
+          url: 'https://bilibili.com',
+          notes: 'Transmissão noturna com público do Bilibili e Twitch.'
+        },
+        {
+          id: 'live_4',
+          title: 'Farm Semanal e Dicas de Build',
+          day: 'Segunda-feira',
+          startTime: '19:30',
+          endTime: '22:00',
+          platforms: ['YouTube', 'Kick'],
+          communities: ['Legacy', 'Evolution'],
+          url: 'https://youtube.com',
+          notes: 'Guia completo para iniciantes da comunidade.'
+        }
+      ];
+    }
+
+    function changeDashboardView(viewMode) {
+      activeDashboardView = viewMode;
+      const btnCards = document.getElementById('viewBtnCards');
+      const btnCal = document.getElementById('viewBtnCalendar');
+      const cardsView = document.getElementById('cardsDashboardView');
+      const calView = document.getElementById('calendarDashboardView');
+      const groupWrapper = document.getElementById('groupSelectWrapper');
+
+      if (viewMode === 'cards') {
+        btnCards.className = 'px-3.5 py-1.5 text-xs font-bold rounded-lg transition flex items-center gap-1.5 bg-purple-600 text-white shadow';
+        btnCal.className = 'px-3.5 py-1.5 text-xs font-bold rounded-lg transition flex items-center gap-1.5 text-slate-400 hover:text-white';
+        cardsView.classList.remove('hidden');
+        calView.classList.add('hidden');
+        groupWrapper.classList.remove('opacity-40', 'pointer-events-none');
+      } else {
+        btnCal.className = 'px-3.5 py-1.5 text-xs font-bold rounded-lg transition flex items-center gap-1.5 bg-purple-600 text-white shadow';
+        btnCards.className = 'px-3.5 py-1.5 text-xs font-bold rounded-lg transition flex items-center gap-1.5 text-slate-400 hover:text-white';
+        cardsView.classList.add('hidden');
+        calView.classList.remove('hidden');
+        groupWrapper.classList.add('opacity-40', 'pointer-events-none');
+      }
+      renderAllComponents();
+    }
+
+    function setPlatformFilter(plat) {
+      currentPlatformFilter = plat;
+      ['all', 'Twitch', 'YouTube', 'Kick', 'TikTok', 'Bilibili'].forEach(p => {
+        const btn = document.getElementById(`btnFilter-${p}`);
+        if (!btn) return;
+        if (p === plat) {
+          btn.className = 'px-3 py-1.5 rounded-xl text-xs font-bold transition bg-purple-600 text-white shadow whitespace-nowrap';
+        } else {
+          btn.className = 'px-2.5 py-1.5 rounded-xl text-xs font-bold transition bg-slate-900 text-slate-300 hover:text-white border border-slate-800 flex items-center gap-1 whitespace-nowrap';
+        }
+      });
+      renderAllComponents();
+    }
+
+    function handleGroupChange(val) {
+      currentGroupBy = val;
+      renderAllComponents();
+    }
+
+    function handleSearchChange(term) {
+      currentSearchTerm = term.toLowerCase().trim();
+      renderAllComponents();
+    }
+
+    function getFilteredLives() {
+      return lives.filter(live => {
+        const livePlatforms = live.platforms || [];
+        if (currentPlatformFilter !== 'all' && !livePlatforms.includes(currentPlatformFilter)) {
+          return false;
+        }
+
+        if (currentSearchTerm) {
+          const pool = `${live.title} ${(live.communities || []).join(' ')} ${livePlatforms.join(' ')} ${live.notes || ''} ${live.day}`.toLowerCase();
+          if (!pool.includes(currentSearchTerm)) return false;
+        }
+
+        return true;
+      });
+    }
+
+    function renderAllComponents() {
+      updateStatsKPIs();
+      const filtered = getFilteredLives();
+      const emptyBox = document.getElementById('emptyScheduleNotice');
+
+      if (filtered.length === 0) {
+        emptyBox.classList.remove('hidden');
+      } else {
+        emptyBox.classList.add('hidden');
+      }
+
+      if (activeDashboardView === 'cards') {
+        renderCardsView(filtered);
+      } else {
+        renderCalendarGridView(filtered);
+      }
+    }
+
+    function updateStatsKPIs() {
+      document.getElementById('statTotalLives').textContent = lives.length;
+
+      const commSet = new Set();
+      lives.forEach(l => (l.communities || []).forEach(c => commSet.add(c)));
+      document.getElementById('statTotalCommunities').textContent = commSet.size;
+
+      const countForPlatform = (plat) => lives.filter(l => (l.platforms || []).includes(plat)).length;
+      document.getElementById('statTwitch').textContent = countForPlatform('Twitch');
+      document.getElementById('statYouTube').textContent = countForPlatform('YouTube');
+      document.getElementById('statKick').textContent = countForPlatform('Kick');
+      document.getElementById('statTikTok').textContent = countForPlatform('TikTok');
+      document.getElementById('statBilibili').textContent = countForPlatform('Bilibili');
+    }
+
+    // Renderizar Modo Cards com Agrupamento Dinâmico
+    function renderCardsView(filtered) {
+      const container = document.getElementById('cardsContainer');
+      container.innerHTML = '';
+
+      if (filtered.length === 0) return;
+
+      const groups = {};
+      if (currentGroupBy === 'day') {
+        DAYS_ORDER.forEach(d => { groups[d] = []; });
+        filtered.forEach(live => {
+          if (!groups[live.day]) groups[live.day] = [];
+          groups[live.day].push(live);
+        });
+      } else if (currentGroupBy === 'community') {
+        communitiesCatalog.forEach(c => { groups[c] = []; });
+        filtered.forEach(live => {
+          (live.communities || ['Geral']).forEach(c => {
+            if (!groups[c]) groups[c] = [];
+            groups[c].push(live);
+          });
+        });
+      } else if (currentGroupBy === 'platform') {
+        ['Twitch', 'YouTube', 'Kick', 'TikTok', 'Bilibili'].forEach(p => { groups[p] = []; });
+        filtered.forEach(live => {
+          (live.platforms || ['Twitch']).forEach(p => {
+            if (!groups[p]) groups[p] = [];
+            groups[p].push(live);
+          });
+        });
+      }
+
+      Object.entries(groups).forEach(([groupTitle, items]) => {
+        if (items.length === 0 && currentGroupBy !== 'day') return;
+
+        items.sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''));
+
+        const section = document.createElement('div');
+        section.className = 'space-y-3';
+
+        section.innerHTML = `
+          <div class="flex items-center justify-between border-b border-white/5 pb-2">
+            <div class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-purple-400">
+              <i class="fa-solid fa-layer-group text-slate-500"></i>
+              <span>${groupTitle}</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20 font-bold">${items.length}</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="cardGrid-${groupTitle.replace(/\s+/g, '')}"></div>
+        `;
+
+        container.appendChild(section);
+        const cardGrid = section.querySelector(`#cardGrid-${groupTitle.replace(/\s+/g, '')}`);
+
+        if (items.length === 0) {
+          const emptyDayCard = document.createElement('div');
+          emptyDayCard.className = 'p-5 rounded-2xl glass-card text-center text-xs text-slate-500 font-medium col-span-full border-dashed';
+          emptyDayCard.textContent = 'Nenhuma transmissão agendada para este bloco.';
+          cardGrid.appendChild(emptyDayCard);
+        } else {
+          items.forEach(live => {
+            cardGrid.appendChild(buildLiveCardElement(live));
+          });
+        }
+      });
+    }
+
+    function buildLiveCardElement(live) {
+      const card = document.createElement('div');
+      card.className = 'glass-card rounded-2xl p-5 shadow-lg flex flex-col justify-between gap-4 hover:border-purple-500/35 transition duration-300 group';
+
+      // Badges das Plataformas
+      const platformBadges = (live.platforms || []).map(plat => {
+        const conf = PLATFORM_CONFIG[plat] || PLATFORM_CONFIG.Twitch;
+        return `
+          <span class="inline-flex items-center gap-1.5 text-[10px] font-extrabold px-2.5 py-1 rounded-lg border ${conf.bg} ${conf.color} ${conf.border}/40 shadow-sm">
+            <i class="${conf.icon} text-xs"></i>
+            <span>${plat}</span>
+          </span>
+        `;
+      }).join('');
+
+      // Badges das Comunidades
+      const communityBadges = (live.communities || []).map(comm => {
+        const conf = COMMUNITY_COLORS[comm] || COMMUNITY_COLORS.default;
+        return `
+          <span class="inline-flex items-center gap-1.5 text-[10px] font-bold px-2 py-0.5 rounded-md border ${conf.bg} ${conf.text} ${conf.border}">
+            <span class="w-1.5 h-1.5 rounded-full" style="background-color:${conf.dot}"></span>
+            <span>${comm}</span>
+          </span>
+        `;
+      }).join('');
+
+      const timeSpan = live.endTime ? `${live.startTime} - ${live.endTime}` : `${live.startTime} em diante`;
+
+      card.innerHTML = `
+        <div>
+          <!-- Header do Card: Horário & Ações -->
+          <div class="flex items-center justify-between text-xs pb-2.5 border-b border-white/5">
+            <span class="font-extrabold text-purple-400 flex items-center gap-1.5">
+              <i class="fa-regular fa-clock"></i> ${timeSpan}
+              <span class="text-slate-500 font-medium">(${live.day})</span>
+            </span>
+            <div class="flex items-center gap-1 no-print">
+              <button onclick="editLiveById('${live.id}')" class="p-1 text-slate-400 hover:text-white transition" title="Editar"><i class="fa-solid fa-pen text-xs"></i></button>
+              <button onclick="deleteLiveById('${live.id}')" class="p-1 text-slate-400 hover:text-rose-400 transition" title="Excluir"><i class="fa-solid fa-trash text-xs"></i></button>
+            </div>
+          </div>
+
+          <!-- Título -->
+          <h3 class="text-sm font-extrabold text-white mt-3 group-hover:text-purple-300 transition">${escapeHTML(live.title)}</h3>
+          ${live.notes ? `<p class="text-xs text-slate-400 mt-1 line-clamp-2 italic">${escapeHTML(live.notes)}</p>` : ''}
+        </div>
+
+        <!-- Bloco Interno com Separação Nítida: Plataformas vs Comunidades -->
+        <div class="rounded-xl bg-black/40 border border-white/5 p-3 space-y-2.5">
+          <!-- 1. Plataformas -->
+          <div>
+            <div class="text-[9px] font-black uppercase text-indigo-400 flex items-center gap-1 mb-1.5">
+              <i class="fa-solid fa-tower-broadcast"></i> Onde Assistir (Plataformas)
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              ${platformBadges || '<span class="text-[10px] text-slate-500">Nenhuma plataforma</span>'}
+            </div>
+          </div>
+
+          <div class="border-t border-white/5"></div>
+
+          <!-- 2. Comunidades -->
+          <div>
+            <div class="text-[9px] font-black uppercase text-pink-400 flex items-center gap-1 mb-1.5">
+              <i class="fa-solid fa-shield-halved"></i> Comunidades Parceiras
+            </div>
+            <div class="flex flex-wrap gap-1.5">
+              ${communityBadges || '<span class="text-[10px] text-slate-500">Nenhuma comunidade</span>'}
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer com Link Direto se existir -->
+        <div class="pt-2 border-t border-white/5 flex items-center justify-between text-[11px]">
+          ${live.url ? `
+            <a href="${escapeHTML(live.url)}" target="_blank" rel="noopener noreferrer" class="text-purple-400 hover:text-purple-300 font-bold flex items-center gap-1.5 transition">
+              <span>Abrir Canal</span> <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+            </a>
+          ` : `
+            <span class="text-slate-600 italic text-[10px]">Sem link direto</span>
+          `}
+          <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Confirmada</span>
+        </div>
+      `;
+
+      return card;
+    }
+
+    function renderCalendarGridView(filtered) {
+      DAYS_ORDER.forEach(day => {
+        const col = document.getElementById(`calCol-${day}`);
+        if (!col) return;
+        col.innerHTML = '';
+
+        const dayLives = filtered
+          .filter(l => l.day === day)
+          .sort((a, b) => (a.startTime || '').localeCompare(b.startTime || ''));
+
+        if (dayLives.length === 0) {
+          col.innerHTML = `<div class="h-32 flex items-center justify-center text-[10px] text-slate-600 italic">Sem lives agendadas</div>`;
+          return;
+        }
+
+        dayLives.forEach(live => {
+          const miniBox = document.createElement('div');
+          miniBox.className = 'p-2.5 rounded-xl bg-slate-950/70 border border-white/5 shadow hover:border-purple-500/40 transition space-y-1.5';
+
+          // Ícones das plataformas
+          const platIcons = (live.platforms || []).map(p => {
+            const conf = PLATFORM_CONFIG[p] || { color: 'text-white', icon: 'fa-solid fa-video' };
+            return `<i class="${conf.icon} text-[11px] ${conf.color}" title="${p}"></i>`;
+          }).join(' ');
+
+          // Tags das comunidades
+          const commTags = (live.communities || []).map(c => `
+            <span class="text-[8px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-slate-300 font-bold">${c}</span>
+          `).join('');
+
+          miniBox.innerHTML = `
+            <div class="flex items-center justify-between text-[10px] text-purple-400 font-bold border-b border-white/5 pb-1">
+              <span>${live.startTime} - ${live.endTime || 'fim'}</span>
+              <div class="flex items-center gap-1.5">${platIcons}</div>
+            </div>
+            <div class="text-[11px] font-extrabold text-white line-clamp-1">${escapeHTML(live.title)}</div>
+            <div class="flex flex-wrap gap-1 pt-0.5">${commTags}</div>
+          `;
+
+          col.appendChild(miniBox);
+        });
+      });
+    }
+
+    function renderModalSelectors() {
+      // 1. Plataformas
+      const platContainer = document.getElementById('modalPlatformChips');
+      platContainer.innerHTML = '';
+
+      ['Twitch', 'YouTube', 'Kick', 'TikTok', 'Bilibili'].forEach(plat => {
+        const isSelected = selectedModalPlatforms.has(plat);
+        const conf = PLATFORM_CONFIG[plat];
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `px-3 py-1.5 rounded-xl text-xs font-bold border transition flex items-center gap-1.5 cursor-pointer ${
+          isSelected 
+            ? `${conf.bg} ${conf.color} ${conf.border} ring-2 ${conf.ring} shadow-md` 
+            : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
+        }`;
+        btn.innerHTML = `<i class="${conf.icon}"></i> <span>${plat}</span> <i class="fa-solid ${isSelected ? 'fa-check text-[9px]' : 'fa-plus text-[9px] opacity-30'}"></i>`;
+        
+        btn.onclick = () => {
+          if (selectedModalPlatforms.has(plat)) {
+            if (selectedModalPlatforms.size > 1) selectedModalPlatforms.delete(plat);
+            else showToastNotification('A live precisa de pelo menos uma plataforma.', 'error');
+          } else {
+            selectedModalPlatforms.add(plat);
+          }
+          document.getElementById('platformErrorMsg').classList.add('hidden');
+          renderModalSelectors();
+        };
+
+        platContainer.appendChild(btn);
+      });
+
+      // 2. Comunidades
+      const commContainer = document.getElementById('modalCommunityChips');
+      commContainer.innerHTML = '';
+
+      communitiesCatalog.forEach(comm => {
+        const isSelected = selectedModalCommunities.has(comm);
+        const conf = COMMUNITY_COLORS[comm] || COMMUNITY_COLORS.default;
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `px-2.5 py-1 rounded-lg text-[11px] font-bold border transition flex items-center gap-1 cursor-pointer ${
+          isSelected 
+            ? `${conf.bg} ${conf.text} ${conf.border} ring-1 ring-purple-400 shadow-sm` 
+            : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
+        }`;
+        btn.innerHTML = `<i class="fa-solid ${isSelected ? 'fa-check text-[9px]' : 'fa-plus text-[9px] opacity-30'}"></i> <span>${comm}</span>`;
+
+        btn.onclick = () => {
+          if (selectedModalCommunities.has(comm)) {
+            if (selectedModalCommunities.size > 1) selectedModalCommunities.delete(comm);
+            else showToastNotification('A live precisa de pelo menos uma comunidade.', 'error');
+          } else {
+            selectedModalCommunities.add(comm);
+          }
+          document.getElementById('communityErrorMsg').classList.add('hidden');
+          renderModalSelectors();
+        };
+
+        commContainer.appendChild(btn);
+      });
+    }
+
+    function handleAddCustomCommunity() {
+      const input = document.getElementById('customCommunityInput');
+      const name = input.value.trim();
+      if (!name) return;
+
+      if (!communitiesCatalog.includes(name)) {
+        communitiesCatalog.push(name);
+      }
+      selectedModalCommunities.add(name);
+      input.value = '';
+      document.getElementById('communityErrorMsg').classList.add('hidden');
+      renderModalSelectors();
+    }
+
+    function openLiveModal(isEdit = false) {
+      if (!isEdit) {
+        document.getElementById('liveForm').reset();
+        document.getElementById('liveFormId').value = '';
+        selectedModalPlatforms = new Set(['Twitch']);
+        selectedModalCommunities = new Set(['Legacy']);
+        document.getElementById('modalLiveTitle').textContent = 'Agendar Transmissão';
+      }
+      renderModalSelectors();
+      document.getElementById('platformErrorMsg').classList.add('hidden');
+      document.getElementById('communityErrorMsg').classList.add('hidden');
+      const modal = document.getElementById('liveModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeLiveModal() {
+      const modal = document.getElementById('liveModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function handleLiveFormSubmit(e) {
+      e.preventDefault();
+      let hasError = false;
+
+      if (selectedModalPlatforms.size === 0) {
+        document.getElementById('platformErrorMsg').classList.remove('hidden');
+        hasError = true;
+      }
+      if (selectedModalCommunities.size === 0) {
+        document.getElementById('communityErrorMsg').classList.remove('hidden');
+        hasError = true;
+      }
+      if (hasError) return;
+
+      const liveId = document.getElementById('liveFormId').value || `live_${Date.now()}`;
+      const newLive = {
+        id: liveId,
+        title: document.getElementById('liveFormTitle').value.trim(),
+        day: document.getElementById('liveFormDay').value,
+        startTime: document.getElementById('liveFormStartTime').value,
+        endTime: document.getElementById('liveFormEndTime').value,
+        url: document.getElementById('liveFormUrl').value.trim(),
+        notes: document.getElementById('liveFormNotes').value.trim(),
+        platforms: Array.from(selectedModalPlatforms),
+        communities: Array.from(selectedModalCommunities)
+      };
+
+      const existingIndex = lives.findIndex(l => l.id === liveId);
+      if (existingIndex >= 0) {
+        lives[existingIndex] = newLive;
+        showToastNotification('Transmissão atualizada com sucesso!');
+      } else {
+        lives.push(newLive);
+        showToastNotification('Nova live agendada na grade!');
+      }
+
+      saveLivesState();
+      closeLiveModal();
+    }
+
+    function editLiveById(id) {
+      const live = lives.find(l => l.id === id);
+      if (!live) return;
+
+      document.getElementById('liveFormId').value = live.id;
+      document.getElementById('liveFormTitle').value = live.title;
+      document.getElementById('liveFormDay').value = live.day;
+      document.getElementById('liveFormStartTime').value = live.startTime;
+      document.getElementById('liveFormEndTime').value = live.endTime || '';
+      document.getElementById('liveFormUrl').value = live.url || '';
+      document.getElementById('liveFormNotes').value = live.notes || '';
+
+      (live.communities || []).forEach(c => {
+        if (!communitiesCatalog.includes(c)) communitiesCatalog.push(c);
+      });
+
+      selectedModalPlatforms = new Set(live.platforms || ['Twitch']);
+      selectedModalCommunities = new Set(live.communities || ['Legacy']);
+
+      document.getElementById('modalLiveTitle').textContent = 'Editar Transmissão';
+      openLiveModal(true);
+    }
+
+    function deleteLiveById(id) {
+      if (window.confirm('Deseja realmente remover esta transmissão?')) {
+        lives = lives.filter(l => l.id !== id);
+        saveLivesState();
+        showToastNotification('Transmissão removida.');
+      }
+    }
+
+    function openCredentialsModal() {
+      const raw = localStorage.getItem(KEY_AUTH);
+      if (raw) {
+        const creds = JSON.parse(raw);
+        document.getElementById('credNewUsername').value = creds.username || '';
+      }
+      document.getElementById('credCurrentPassword').value = '';
+      document.getElementById('credNewPassword').value = '';
+      document.getElementById('credFeedbackAlert').classList.add('hidden');
+      const modal = document.getElementById('credentialsModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeCredentialsModal() {
+      const modal = document.getElementById('credentialsModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function openColorModal() {
+      const modal = document.getElementById('colorModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeColorModal() {
+      const modal = document.getElementById('colorModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function applyCustomColor(varName, colorVal) {
+      document.documentElement.style.setProperty(varName, colorVal);
+      saveThemePreferences();
+    }
+
+    function saveThemePreferences() {
+      const theme = {
+        accent: getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim(),
+        bg: getComputedStyle(document.documentElement).getPropertyValue('--bg-color').trim(),
+        card: getComputedStyle(document.documentElement).getPropertyValue('--card-bg').trim(),
+      };
+      localStorage.setItem(KEY_THEME, JSON.stringify(theme));
+    }
+
+    function loadThemePreferences() {
+      const raw = localStorage.getItem(KEY_THEME);
+      if (raw) {
+        try {
+          const t = JSON.parse(raw);
+          if (t.accent) {
+            document.documentElement.style.setProperty('--accent-color', t.accent);
+            document.getElementById('pickerAccent').value = t.accent;
+          }
+          if (t.bg) {
+            document.documentElement.style.setProperty('--bg-color', t.bg);
+            document.getElementById('pickerBg').value = t.bg;
+          }
+          if (t.card) {
+            document.documentElement.style.setProperty('--card-bg', t.card);
+            document.getElementById('pickerCard').value = t.card;
+          }
+        } catch (e) {}
+      }
+    }
+
+    function resetDefaultThemeColors() {
+      document.documentElement.style.setProperty('--accent-color', '#a855f7');
+      document.documentElement.style.setProperty('--bg-color', '#080a11');
+      document.documentElement.style.setProperty('--card-bg', '#121625');
+      document.getElementById('pickerAccent').value = '#a855f7';
+      document.getElementById('pickerBg').value = '#080a11';
+      document.getElementById('pickerCard').value = '#121625';
+      localStorage.removeItem(KEY_THEME);
+      showToastNotification('Cores restauradas para o padrão.');
+    }
+
+    function openBackupModal() {
+      const modal = document.getElementById('backupModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeBackupModal() {
+      const modal = document.getElementById('backupModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function exportJsonFile() {
+      const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(lives, null, 2));
+      const anchor = document.createElement('a');
+      anchor.setAttribute('href', dataStr);
+      anchor.setAttribute('download', `streamhub_backup_${new Date().toISOString().slice(0, 10)}.json`);
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      showToastNotification('Arquivo de backup exportado!');
+    }
+
+    function importJsonFile(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const parsed = JSON.parse(event.target.result);
+          if (Array.isArray(parsed)) {
+            lives = parsed;
+            lives.forEach(item => {
+              (item.communities || []).forEach(c => {
+                if (!communitiesCatalog.includes(c)) communitiesCatalog.push(c);
+              });
+            });
+            saveLivesState();
+            closeBackupModal();
+            showToastNotification('Backup importado com sucesso!');
+          } else {
+            showToastNotification('Arquivo inválido: deve conter uma lista.', 'error');
+          }
+        } catch (err) {
+          showToastNotification('Erro ao interpretar o arquivo JSON.', 'error');
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = '';
+    }
+
+    function showToastNotification(message, type = 'success') {
+      const toast = document.getElementById('toastNotification');
+      const msg = document.getElementById('toastMessage');
+      const icon = document.getElementById('toastIcon');
+
+      msg.textContent = message;
+      if (type === 'error') {
+        icon.className = 'fa-solid fa-circle-exclamation text-rose-500';
+      } else {
+        icon.className = 'fa-solid fa-circle-check text-emerald-400';
+      }
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 3000);
+    }
+
+    function escapeHTML(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
 </body>
 </html>
